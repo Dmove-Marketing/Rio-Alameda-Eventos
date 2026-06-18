@@ -73,6 +73,42 @@ export function initForms() {
         }
       });
 
+      // Validação de formato: email
+      form.querySelectorAll<HTMLInputElement>('input[type="email"]').forEach((field) => {
+        if (!field.value) return; // campo vazio já capturado pelo required acima
+        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(field.value);
+        if (!ok) {
+          isValid = false;
+          (field as HTMLElement).style.borderColor = '#ef4444';
+          (field as HTMLElement).style.outline = '2px solid #ef4444';
+          if (!firstInvalid) firstInvalid = field;
+          const clear = () => {
+            (field as HTMLElement).style.removeProperty('border-color');
+            (field as HTMLElement).style.removeProperty('outline');
+            field.removeEventListener('input', clear);
+          };
+          field.addEventListener('input', clear);
+        }
+      });
+
+      // Validação de formato: telefone (mínimo 10 dígitos — DDD + número)
+      form.querySelectorAll<HTMLInputElement>('[name="telefone"]').forEach((field) => {
+        if (!field.value) return;
+        const digits = field.value.replace(/\D/g, '');
+        if (digits.length < 10) {
+          isValid = false;
+          (field as HTMLElement).style.borderColor = '#ef4444';
+          (field as HTMLElement).style.outline = '2px solid #ef4444';
+          if (!firstInvalid) firstInvalid = field;
+          const clear = () => {
+            (field as HTMLElement).style.removeProperty('border-color');
+            (field as HTMLElement).style.removeProperty('outline');
+            field.removeEventListener('input', clear);
+          };
+          field.addEventListener('input', clear);
+        }
+      });
+
       if (!isValid) {
         firstInvalid!.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (firstInvalid as HTMLElement).focus();
@@ -108,9 +144,36 @@ export function initForms() {
       const tracking: Record<string, string> = trackingRaw ? JSON.parse(trackingRaw) : {};
 
       const now = new Date();
-      const dateStr = now.toLocaleDateString('pt-BR');
-      const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const monthsPt = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+      const dateLong = `${monthsPt[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+      const timeAMPM = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
 
+      // Mapeamento de chaves para o n8n do cliente (layout Elementor)
+      const bodyPayload: Record<string, string> = {};
+      Object.entries(rawData).forEach(([key, val]) => {
+        let mappedKey = key.charAt(0).toUpperCase() + key.slice(1);
+        if (key === 'nome') mappedKey = 'Nome';
+        else if (key === 'telefone') mappedKey = 'WhatsApp';
+        else if (key === 'email') mappedKey = 'E-mail';
+        else if (key === 'tipo') mappedKey = 'Tipo de evento';
+        else if (key === 'convidados') mappedKey = 'Convidados';
+        else if (key === 'data') mappedKey = 'Data do evento';
+        else if (key === 'horario') mappedKey = 'Horário do evento';
+        else if (key === 'mensagem') mappedKey = 'Mensagem';
+        else if (key === 'empresa') mappedKey = 'Empresa';
+        
+        bodyPayload[mappedKey] = val;
+      });
+
+      // Garante que campos esperados existam
+      const expectedFields = ['Nome', 'WhatsApp', 'E-mail', 'Tipo de evento', 'Convidados', 'Data do evento', 'Horário do evento', 'Mensagem'];
+      expectedFields.forEach(f => {
+        if (bodyPayload[f] === undefined) {
+          bodyPayload[f] = '';
+        }
+      });
+
+      // Também geramos capitalizedFields para manter retrocompatibilidade com dataLayer / GTM
       const capitalizedFields: Record<string, string> = {};
       let fonteBase = rawData['fonte'] || project;
       Object.entries(rawData).forEach(([key, val]) => {
@@ -129,7 +192,7 @@ export function initForms() {
       trackingParamKeys.forEach(k => { if (tracking[k]) qs.set(k, tracking[k]); });
       const fonte = qs.toString() ? `${fonteBase}?${qs.toString()}` : fonteBase;
 
-      // Campos Meta CAPI — enviados também como campos flat para uso direto no n8n
+      // Campos Meta CAPI
       const metaCapi: Record<string, string> = {};
       if (tracking['fbc'])         metaCapi['fbc']         = tracking['fbc'];
       if (tracking['fbp'])         metaCapi['fbp']         = tracking['fbp'];
@@ -137,14 +200,14 @@ export function initForms() {
       if (tracking['event_id'])    metaCapi['event_id']    = tracking['event_id'];
 
       const payload: Record<string, string> = {
-        ...capitalizedFields,
+        ...bodyPayload,
         Fonte: fonte,
-        Data: dateStr,
-        'Horário': timeStr,
-        'URL da página': window.location.href,
-        'Agente de usuário': navigator.userAgent,
-        'IP remoto': '',
-        'Desenvolvido por': 'Dmove',
+        Date: dateLong,
+        Time: timeAMPM,
+        'Page URL': window.location.href,
+        'User Agent': navigator.userAgent,
+        'Remote IP': '',
+        'Powered by': 'Elementor',
         form_id: formId,
         form_name: formId,
         ...metaCapi,

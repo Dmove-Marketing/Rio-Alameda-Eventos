@@ -1,0 +1,488 @@
+---
+// Gerado e refatorado para Dmove Clean-Room
+import Base from '../layouts/Base.astro';
+import config from '../../config.json';
+import Img from '../components/ui/Img.astro';
+import LeadForm from '../components/forms/LeadForm.astro';
+import '../styles/eventos-corporativos.css';
+import '@fontsource/bebas-neue';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/700.css';
+
+import { getImage } from 'astro:assets';
+import imgEquilibrioBg from '../assets/images/29988650_158-Convertido-scaled.webp';
+import imgEquilibrioBox from '../assets/images/WhatsApp-Image-2025-01-14-at-11.28.10-scaled.jpeg';
+import imgEstruturaBg from '../assets/images/grain-8-scaled.jpg';
+import imgDividerBg from '../assets/images/WhatsApp-Image-2025-04-06-at-12.27.29-scaled.jpeg';
+import imgContatoBg from '../assets/images/imgi_1_516514976_17885575200308417_3232230295027353569_n.jpg';
+import fontBeyondInfinity from '../assets/fonts/Beyond-Infinity-Demo.woff';
+
+const optEquilibrioBg = await getImage({ src: imgEquilibrioBg, format: 'webp', quality: 80, width: 1200 });
+const optEquilibrioBox = await getImage({ src: imgEquilibrioBox, format: 'webp', quality: 80, width: 800 });
+const optEstruturaBg = await getImage({ src: imgEstruturaBg, format: 'webp', quality: 75, width: 1000 });
+const optDividerBg = await getImage({ src: imgDividerBg, format: 'webp', quality: 75, width: 1200 });
+const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality: 80, width: 1200 });
+---
+
+<Base
+  title="Eventos corporativos - Rio Alameda Eventos"
+  description="O Rio Alameda é o espaço ideal para eventos corporativos na Zona Sul do Rio, com vista para o Cristo Redentor e estrutura de alto padrão."
+  ogImage="https://eventos.rioalamedaeventos.com/wp-content/uploads/2025/09/imgi_108_588d00_1d39e94a04c542b7989dabc3392724b8mv2.jpg"
+  canonical="https://eventos.rioalamedaeventos.com/eventos-corporativos/"
+  whatsAppStep1Fields={[
+    { name: 'data', type: 'text', placeholder: 'Data do evento', required: true },
+    { name: 'horario', type: 'text', placeholder: 'Horário do evento', required: true },
+    { name: 'convidados', type: 'number', placeholder: 'N° de Pessoas (convidados)', required: true },
+    { name: 'empresa', type: 'text', placeholder: 'Empresa', required: true },
+    { name: 'tipo', type: 'select', placeholder: '', required: true, options: [
+      { value: '', label: 'Tipo de evento' },
+      { value: 'Confraternização corporativa', label: 'Confraternização corporativa' },
+      { value: 'Corporativo', label: 'Corporativo' },
+      { value: 'Feiras e Exposições', label: 'Feiras e Exposições' },
+      { value: 'Masterclass e Palestras', label: 'Masterclass e Palestras' },
+      { value: 'Mentorias e Treinamentos', label: 'Mentorias e Treinamentos' },
+      { value: 'Offsite corporativo', label: 'Offsite corporativo' },
+      { value: 'Reuniões de Networking', label: 'Reuniões de Networking' },
+      { value: 'Workshops, Conferências e Seminários', label: 'Workshops, Conferências e Seminários' },
+      { value: 'Outros', label: 'Outros' }
+    ] }
+  ]}
+  whatsAppMessage="Olá, vamos conversar?\nEstamos ansiosos para saber mais sobre seu evento! 🎉"
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin />
+    <link rel="preconnect" href="https://fast.wistia.net" />
+    <link rel="preconnect" href="https://embed-cloudfront.wistia.com" crossorigin />
+    <link rel="preload" href={fontBeyondInfinity} as="font" type="font/woff" crossorigin />
+<link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" /></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap" /></noscript>
+  </Fragment>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <Img src="background-cristov3.webp" alt="" width={1920} height={1080} priority class="hero-bg-img" />
+    <div class="video-background-wrapper">
+      <iframe
+        data-src="https://fast.wistia.net/embed/iframe/668z4mkvml?autoplay=true&muted=true&loop=true&controlsVisibleOnLoad=false&videoFoam=true&endVideoBehavior=loop&qualityMin=720"
+        title="Vídeo de Fundo" allow="autoplay" frameborder="0" width="100%" height="100%">
+      </iframe>
+    </div>
+    <div class="hero-container">
+      <div class="logo-wrapper">
+        <Img src="rio-alameda-sem-fundo-branca-e1758045596842.png" alt="Rio Alameda Logo" width={130} height={94} class="logo-img" priority />
+      </div>
+      <div class="hero-content">
+        <h2 class="hero-title">Seu evento corporativo <br /> com vista para o</h2>
+        <h1 class="hero-accent">Cristo Redentor</h1>
+        <p class="hero-description">Um espaço sofisticado na Zona Sul do Rio, onde estrutura, localização e serviços de alto padrão se conectam para elevar a experiência do seu evento empresarial</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#contato">Solicite um orçamento</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Equilíbrio Section -->
+  <section class="equilibrio-section" style={`background-image: url(${optEquilibrioBg.src});`}>
+    <div class="equilibrio-container">
+      <div class="equilibrio-box">
+        <div class="equilibrio-content">
+          <div class="section-title-wrapper">
+            <h2 class="section-title">O perfeito equilíbrio entre</h2>
+            <h3 class="section-subtitle">cidade<span class="accent-dot">,</span> natureza e neg<span class="accent-dot">ó</span>cios</h3>
+          </div>
+          <p class="section-text">Localizado estrategicamente na Zona Sul do Rio, o Rio Alameda Eventos conta com 1.000 m² de área, pé-direito alto e uma vista deslumbrante para o Cristo Redentor.<br />Aqui, sua empresa encontra a liberdade para personalizar cada detalhe e transformar encontros, convenções e celebrações corporativas em experiências marcantes.</p>
+        </div>
+        <div class="equilibrio-image" style={`background-image: url(${optEquilibrioBox.src});`}></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Estrutura Section -->
+  <section class="estrutura-section" style={`background-image: url(${optEstruturaBg.src});`}>
+    <div class="estrutura-container">
+      <div class="estrutura-header">
+        <h2 class="section-title dark-text">A estrutura completa para</h2>
+        <h3 class="section-subtitle white-text">o seu evento corporativo</h3>
+      </div>
+      <p class="section-text dark-text">Com 825 m² de área livre, o Rio Alameda Eventos é o cenário perfeito para convenções, treinamentos, confraternizações e lançamentos. O espaço oferece acessibilidade, estacionamento, climatização e camarim exclusivo, garantindo conforto, eficiência e uma experiência completa para sua equipe e convidados.</p>
+      <div class="estrutura-actions">
+        <a class="btn-dark" href="#contato">Solicite um orçamento</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Banner Divisor -->
+  <section class="divider-banner-section" style={`background-image: url(${optDividerBg.src});`}>
+  </section>
+
+  <!-- Versatilidade Section -->
+  <section class="versatilidade-section" style={`background-image: url(${optEquilibrioBg.src});`}>
+    <div class="versatilidade-container">
+      <div class="versatilidade-box">
+        <div class="versatilidade-header">
+          <h2 class="section-title">Versatilidade e experiência para</h2>
+          <h3 class="section-subtitle">qualquer formato de evento</h3>
+        </div>
+        <div class="formats-grid">
+          <div class="format-card">
+            <div class="format-icon">
+              <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path d="M128 480h256V80c0-26.5-21.5-48-48-48H176c-26.5 0-48 21.5-48 48v400zm64-384h128v32H192V96zm320 80v256c0 26.5-21.5 48-48 48h-48V128h48c26.5 0 48 21.5 48 48zM96 480H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48h48v352z"/>
+              </svg>
+            </div>
+            <h4 class="format-title">Confraternizações<br />empresariais</h4>
+          </div>
+          <div class="format-card">
+            <div class="format-icon">
+              <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"/>
+              </svg>
+            </div>
+            <h4 class="format-title">Lançamentos<br />de produtos</h4>
+          </div>
+          <div class="format-card">
+            <div class="format-icon">
+              <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+                <path d="M208 352c-2.39 0-4.78.35-7.06 1.09C187.98 357.3 174.35 360 160 360c-14.35 0-27.98-2.7-40.95-6.91-2.28-.74-4.66-1.09-7.05-1.09C49.94 352-.33 402.48 0 464.62.14 490.88 21.73 512 48 512h224c26.27 0 47.86-21.12 48-47.38.33-62.14-49.94-112.62-112-112.62zm-48-32c53.02 0 96-42.98 96-96s-42.98-96-96-96-96 42.98-96 96 42.98 96 96 96zM592 0H208c-26.47 0-48 22.25-48 49.59V96c23.42 0 45.1 6.78 64 17.8V64h352v288h-64v-64H384v64h-76.24c19.1 16.69 33.12 38.73 39.69 64H592c26.47 0 48-22.25 48-49.59V49.59C640 22.25 618.47 0 592 0z"/>
+              </svg>
+            </div>
+            <h4 class="format-title">Treinamentos<br />e workshops</h4>
+          </div>
+          <div class="format-card">
+            <div class="format-icon">
+              <span class="format-icon-wrapper">
+                <svg aria-hidden="true" class="address-card-svg" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M528 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 400H48V80h480v352zM208 256c35.3 0 64-28.7 64-64s-28.7-64-64-64-64 28.7-64 64 28.7 64 64 64zm-89.6 128h179.2c12.4 0 22.4-8.6 22.4-19.2v-19.2c0-31.8-30.1-57.6-67.2-57.6-10.8 0-18.7 8-44.8 8-26.9 0-33.4-8-44.8-8-37.1 0-67.2 25.8-67.2 57.6v19.2c0 10.6 10 19.2 22.4 19.2zM360 320h112c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8H360c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8zm0-64h112c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8H360c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8zm0-64h112c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8H360c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8z"></path></svg>
+              </span>
+            </div>
+            <h4 class="format-title">Convenções<br />e congressos</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cenário Section -->
+  <section class="cenario-section">
+    <div class="cenario-container">
+      <h2 class="section-title dark-text">O cenário onde ideias</h2>
+      <h3 class="section-subtitle white-text">se tornam grandes eventos</h3>
+    </div>
+  </section>
+
+  <!-- Galeria Section -->
+  <section class="galeria-section">
+    <div class="gallery-grid">
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Espaço Corporativo na Zona Sul" href="#" class="gallery-link">
+          <Img src="espaco-para-evento-corporativo-na-zona-sul-do-rio-de-janeiro-3.png" alt="Espaço para evento corporativo na Zona Sul do Rio de Janeiro" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 1" href="#" class="gallery-link">
+          <Img src="galeria-1-scaled.jpeg" alt="Galeria 1" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 2" href="#" class="gallery-link">
+          <Img src="galeria-2-scaled.jpeg" alt="Galeria 2" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 3" href="#" class="gallery-link">
+          <Img src="galeria-3-scaled.jpeg" alt="Galeria 3" width={600} height={800} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 4" href="#" class="gallery-link">
+          <Img src="galeria-4-scaled.jpeg" alt="Galeria 4" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 5" href="#" class="gallery-link">
+          <Img src="galeria-1.png" alt="Galeria 5" width={800} height={800} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 6" href="#" class="gallery-link">
+          <Img src="galeria-6-scaled.jpeg" alt="Galeria 6" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 8" href="#" class="gallery-link">
+          <Img src="galeria-8-scaled.jpeg" alt="Galeria 8" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Gallery 3" href="#" class="gallery-link">
+          <Img src="gallery-3-scaled.webp" alt="Gallery 3" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 9" href="#" class="gallery-link">
+          <Img src="galeria-9-scaled.jpeg" alt="Galeria 9" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Gallery 1" href="#" class="gallery-link">
+          <Img src="gallery-1-scaled.webp" alt="Gallery 1" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 10" href="#" class="gallery-link">
+          <Img src="galeria-10-scaled.jpeg" alt="Galeria 10" width={800} height={533} />
+        </a>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Contato Section -->
+  <section class="contato-section" id="contato" style={`background-image: url(${optContatoBg.src});`}>
+    <div class="contato-container">
+      <div class="contato-info">
+        <h2 class="section-title">Eleve seu próximo evento corporativo</h2>
+        <h3 class="section-subtitle">a outro patamar</h3>
+        <hr class="divider" />
+        <p class="section-text">Preencha seus dados e receba um orçamento personalizado para seu evento.</p>
+      </div>
+      <div class="contato-form-wrapper">
+        <LeadForm
+          formId="lead-form"
+          project={config.project_slug}
+          submitUrl={config.forms['lead-form'].webhooks[0]}
+          redirectUrl={config.forms['lead-form'].redirect_on_success}
+          submitText="ENVIAR SOLICITAÇÃO"
+          honeypot
+          fields={[
+            { name: 'nome',       type: 'text',     placeholder: 'Nome completo',              required: true },
+            { name: 'telefone',   type: 'text',     placeholder: 'WhatsApp',                   required: true },
+            { name: 'email',      type: 'email',    placeholder: 'E-mail',                     required: true },
+            { name: 'empresa',    type: 'text',     placeholder: 'Empresa',                    required: true },
+            { name: 'tipo', type: 'select', placeholder: '', required: true, options: [
+              { value: '', label: 'Tipo de evento', disabled: true, selected: true },
+              { value: 'Confraternização corporativa', label: 'Confraternização corporativa' },
+              { value: 'Corporativo', label: 'Corporativo' },
+              { value: 'Feiras e Exposições', label: 'Feiras e Exposições' },
+              { value: 'Masterclass e Palestras', label: 'Masterclass e Palestras' },
+              { value: 'Mentorias e Treinamentos', label: 'Mentorias e Treinamentos' },
+              { value: 'Offsite corporativo', label: 'Offsite corporativo' },
+              { value: 'Reuniões de Networking', label: 'Reuniões de Networking' },
+              { value: 'Workshops, Conferências e Seminários', label: 'Workshops, Conferências e Seminários' },
+              { value: 'Outros', label: 'Outros' }
+            ]},
+            { name: 'data',       type: 'text',     placeholder: 'Data do Evento',             required: true, id: 'event-date' },
+            { name: 'horario',    type: 'text',     placeholder: 'Horário (Início/Término)',    required: true },
+            { name: 'convidados', type: 'number',   placeholder: 'N° de Pessoas (convidados)', required: true },
+            { name: 'mensagem',   type: 'textarea', placeholder: 'Detalhes adicionais (opcional)', required: false },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="footer-section">
+    <div class="footer-container">
+      <div class="footer-copyright">
+        <p>Copyright © 2026 Rio Alameda Eventos - Todos os direitos reservados</p>
+      </div>
+      <div class="footer-logo">
+        <Img src="rio-alameda-sem-fundo-branca-e1758045596842.png" alt="Rio Alameda Logo" width={120} height={87} />
+      </div>
+      <div class="footer-credits">
+        <span>Desenvolvido por:</span>
+        <a href="https://dmove.com.br/?utm_source=lp&utm_medium=rio+alameda&utm_campaign=eventos+corporativos" target="_blank" rel="noopener">
+          <Img src="logo-dmove.png" alt="Dmove Logo" width={80} height={18} />
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div id="custom-lightbox" class="custom-lightbox" aria-hidden="true" role="dialog">
+    <button class="lightbox-close" aria-label="Fechar">&times;</button>
+    <button class="lightbox-prev" aria-label="Anterior">&#10094;</button>
+    <button class="lightbox-next" aria-label="Próximo">&#10095;</button>
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="" />
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+</Base>
+
+<script>
+  // Carrega assets do flatpickr de forma dinâmica e assíncrona
+  async function loadFlatpickr(): Promise<boolean> {
+    if ((window as any).flatpickr) return true;
+
+    try {
+      if (!document.querySelector('link[href*="flatpickr"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+        document.head.appendChild(link);
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js';
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Falha ao carregar flatpickr'));
+        document.head.appendChild(script);
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  // Inicialização do Datepicker flatpickr
+  async function initDatePicker() {
+    const fields = document.querySelectorAll('input[name="data"]');
+    if (fields.length === 0) return;
+    
+    const loaded = await loadFlatpickr();
+    if (!loaded) return;
+    
+    const portugueseLocale = {
+      weekdays: {
+        shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+        longhand: ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"]
+      },
+      months: {
+        shorthand: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        longhand: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+      },
+      firstDayOfWeek: 1,
+      rangeSeparator: " até ",
+      ordinal: () => "º"
+    };
+
+    fields.forEach((field) => {
+      if ((field as any)._flatpickr) return;
+      if ((window as any).flatpickr) {
+        (window as any).flatpickr(field, {
+          disableMobile: true,
+          dateFormat: "d/m/Y",
+          locale: portugueseLocale
+        });
+      }
+    });
+  }
+
+  // Inicialização do Lightbox customizado
+  function initLightbox() {
+    const links = document.querySelectorAll<HTMLAnchorElement>('a[data-lightbox-open="yes"]');
+    const lightbox = document.getElementById('custom-lightbox');
+    if (links.length === 0 || !lightbox) return;
+
+    const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
+
+    if (!lightboxImg || !lightboxCaption || !closeBtn || !prevBtn || !nextBtn) return;
+
+    let currentIndex = 0;
+    const images = Array.from(links).map((link) => {
+      const img = link.querySelector('img');
+      return {
+        url: img ? img.src : link.href,
+        title: link.getAttribute('data-lightbox-title') || img?.alt || ''
+      };
+    });
+
+    function showImage(index: number) {
+      if (index < 0) index = images.length - 1;
+      if (index >= images.length) index = 0;
+      currentIndex = index;
+      
+      lightboxImg.src = images[currentIndex].url;
+      if (lightboxCaption) {
+        lightboxCaption.textContent = images[currentIndex].title;
+      }
+    }
+
+    links.forEach((link, idx) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showImage(idx);
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      lightboxImg.src = '';
+    });
+
+    prevBtn.addEventListener('click', () => showImage(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showImage(currentIndex + 1));
+
+    // Fechar ao clicar fora da imagem
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox-content')) {
+        closeBtn.dispatchEvent(new Event('click'));
+      }
+    });
+
+    // Navegação via teclado
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.getAttribute('aria-hidden') === 'false') {
+        if (e.key === 'Escape') closeBtn.dispatchEvent(new Event('click'));
+        if (e.key === 'ArrowLeft') prevBtn.dispatchEvent(new Event('click'));
+        if (e.key === 'ArrowRight') nextBtn.dispatchEvent(new Event('click'));
+      }
+    });
+  }
+
+  // Lazy load do vídeo de fundo (Wistia) para otimização de FCP/LCP
+  function initLazyVideo() {
+    const iframe = document.querySelector<HTMLIFrameElement>('.video-background-wrapper iframe');
+    if (!iframe) return;
+    const lazySrc = iframe.getAttribute('data-src');
+    if (!lazySrc) return;
+
+    const loadVideo = () => {
+      iframe.setAttribute('src', lazySrc);
+    };
+
+    // Carrega após o evento load com pequeno delay
+    if (document.readyState === 'complete') {
+      setTimeout(loadVideo, 1200);
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(loadVideo, 1200);
+      });
+    }
+  }
+
+  // Inicializar tudo ao carregar
+  function initAll() {
+    initDatePicker();
+    initLightbox();
+    initLazyVideo();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+
+  // Vigia mutações para popups dinâmicos
+  const obs = new MutationObserver(() => {
+    initDatePicker();
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+</script>

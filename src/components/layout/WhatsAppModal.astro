@@ -1,0 +1,912 @@
+---
+// WhatsAppModal.astro — Componente genérico do template Dmove
+// Botão flutuante WhatsApp + popup com formulário em 2 etapas.
+// Etapa 1: campos configuráveis via prop `step1Fields` (padrão: select de assunto)
+// Etapa 2: dados de contato fixos (nome, email, telefone)
+// Número, avatar e nome do atendente vêm de config.json > whatsapp
+
+import config from '../../../config.json';
+
+interface FieldOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  selected?: boolean;
+}
+
+interface Step1Field {
+  name: string;
+  type: 'text' | 'email' | 'tel' | 'number' | 'select' | 'textarea' | 'date' | 'radio';
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  options?: FieldOption[];
+  value?: string;
+  min?: string;
+  max?: string;
+  rows?: number;
+}
+
+interface Props {
+  /**
+   * Campos da etapa 1 (assunto/interesse/detalhes do pedido).
+   * Use os mesmos campos do LeadForm da página excluindo nome/email/telefone.
+   */
+  step1Fields?: Step1Field[];
+  /** Mensagem de boas-vindas exibida no modal (quebra de linha com \n) */
+  welcomeMessage?: string;
+}
+
+const {
+  step1Fields = [
+    {
+      name: 'assunto',
+      type: 'select',
+      required: true,
+      options: [
+        { value: '',            label: 'Selecione o assunto', disabled: true, selected: true },
+        { value: 'Informações', label: 'Informações'  },
+        { value: 'Orçamento',   label: 'Orçamento'    },
+        { value: 'Parceria',    label: 'Parceria'     },
+        { value: 'Outros',      label: 'Outros'       },
+      ],
+    },
+  ],
+  welcomeMessage = 'Olá! Como posso te ajudar?\nPreencha os campos abaixo e vamos conversar pelo WhatsApp.',
+} = Astro.props;
+
+const waPhone   = config.whatsapp?.phone        || '5511999999999';
+const waName    = config.whatsapp?.display_name || config.project_name || 'Atendimento';
+const waAvatar  = config.whatsapp?.avatar       || '/images/whatsapp-avatar.jpg';
+const waEnabled = config.whatsapp?.enabled !== false;
+
+const webhookUrl  = config.forms['lead-form']?.webhooks[0] || '';
+const projectSlug = config.project_slug || '';
+
+const welcomeLines = welcomeMessage.split('\n');
+
+// Mapa nome-do-campo → label legível para a mensagem do WhatsApp
+const fieldLabels: Record<string, string> = { nome: 'Nome', email: 'E-mail', telefone: 'Telefone' };
+step1Fields.forEach(f => {
+  fieldLabels[f.name] = f.label || f.placeholder || (f.name.charAt(0).toUpperCase() + f.name.slice(1).replace(/_/g, ' '));
+});
+---
+
+{waEnabled && (
+<div class="whatsapp-wrapper">
+
+  <!-- Botão Flutuante -->
+  <button id="wa-floating-btn" class="wa-floating-btn" aria-label="Falar pelo WhatsApp" title={`Falar pelo WhatsApp com ${waName}`}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.464L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.789-4.382 9.792-9.791.001-2.621-1.013-5.086-2.856-6.93C16.368 2.05 13.91 1.037 11.29 1.037c-5.4.001-9.79 4.384-9.793 9.793-.001 1.514.469 2.989 1.359 4.265l-.993 3.624 3.704-.971zm10.73-6.52c-.296-.148-1.748-.862-2.019-.962-.27-.099-.467-.148-.663.149-.197.296-.764.962-.937 1.16-.172.197-.344.222-.64.074-.296-.148-1.25-.46-2.381-1.468-.881-.785-1.475-1.756-1.648-2.052-.172-.296-.018-.456.13-.603.133-.132.296-.346.444-.519.148-.173.197-.296.296-.494.099-.198.05-.37-.025-.519-.074-.148-.663-1.6-.908-2.192-.239-.575-.483-.497-.663-.506-.172-.008-.37-.01-.566-.01s-.514.074-.783.37c-.27.296-1.03 1.008-1.03 2.46s1.056 2.852 1.203 3.05c.148.197 2.078 3.173 5.032 4.45.703.303 1.25.485 1.678.621.706.224 1.348.193 1.857.117.567-.084 1.748-.713 1.995-1.4.246-.688.246-1.28.172-1.4-.074-.122-.271-.19-.567-.34z" />
+    </svg>
+  </button>
+
+  <!-- Modal Overlay -->
+  <div id="wa-modal-overlay" class="wa-modal-overlay" role="dialog" aria-modal="true" aria-label={`Chat com ${waName}`}>
+    <div class="wa-modal-card">
+
+      <!-- Cabeçalho estilo WhatsApp -->
+      <div class="wa-header">
+        <div class="wa-avatar-info">
+          <div class="wa-avatar">
+            <img src={waAvatar} alt={waName} class="wa-avatar-img" width="38" height="38" />
+            <span class="wa-online-dot"></span>
+          </div>
+          <div class="wa-details">
+            <h4 class="wa-name">{waName}</h4>
+            <span class="wa-status">Online agora</span>
+          </div>
+        </div>
+        <button id="wa-close-btn" class="wa-close-btn" aria-label="Fechar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Corpo -->
+      <div class="wa-body">
+
+        <!-- Balão de mensagem de boas-vindas -->
+        <div class="wa-bubble-wrap">
+          <div class="wa-bubble">
+            {welcomeLines.map((line) => <p>{line}</p>)}
+            <span class="wa-bubble-tick">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
+                <path d="M1 5.5L5.5 10L15 1" stroke="#53bdeb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Indicador de progresso -->
+        <div class="wa-progress">
+          <div class="wa-progress-step active" id="wa-dot-1">
+            <span>1</span>
+          </div>
+          <div class="wa-progress-line"></div>
+          <div class="wa-progress-step" id="wa-dot-2">
+            <span>2</span>
+          </div>
+        </div>
+
+        <!-- Formulário multi-etapa -->
+        <form id="wa-multistep-form" class="wa-form" novalidate>
+
+          <!-- ETAPA 1: campos configuráveis via step1Fields -->
+          <div id="wa-step-1" class="wa-step active">
+            {step1Fields.map((f) => (
+              <div class="wa-form-group">
+                {f.type !== 'radio' && (
+                  <label class={f.label ? 'wa-label' : 'wa-label sr-only'} for={`wa-${f.name}`}>
+                    {f.label || f.placeholder || (f.name.charAt(0).toUpperCase() + f.name.slice(1).replace(/_/g, ' '))}
+                  </label>
+                )}
+
+                {f.type === 'select' && (
+                  <select name={f.name} id={`wa-${f.name}`} required={f.required} class="wa-input wa-select">
+                    {f.options?.map((opt) => (
+                      <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                    ))}
+                  </select>
+                )}
+
+                {f.type === 'textarea' && (
+                  <textarea name={f.name} id={`wa-${f.name}`} placeholder={f.placeholder} required={f.required} rows={f.rows ?? 3} class="wa-input wa-textarea" />
+                )}
+
+                {f.type === 'radio' && (
+                  <div class="wa-radio-group" role="group">
+                    {f.options?.map((opt) => (
+                      <label class="wa-radio-label">
+                        <input type="radio" name={f.name} value={opt.value} required={f.required} />
+                        <span>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {f.type !== 'select' && f.type !== 'textarea' && f.type !== 'radio' && (
+                  <input
+                    type={f.type}
+                    name={f.name}
+                    id={`wa-${f.name}`}
+                    placeholder={f.placeholder}
+                    required={f.required}
+                    min={f.min}
+                    max={f.max}
+                    value={f.value}
+                    class="wa-input"
+                  />
+                )}
+              </div>
+            ))}
+
+            <button type="button" id="wa-next-btn" class="wa-btn wa-btn-primary">
+              Continuar
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- ETAPA 2: dados de contato (fixo) -->
+          <div id="wa-step-2" class="wa-step">
+            <div class="wa-form-group">
+              <label class="wa-label" for="wa-nome">Nome completo</label>
+              <input type="text" name="nome" id="wa-nome" placeholder="Como você se chama?" required class="wa-input" autocomplete="name" />
+            </div>
+            <div class="wa-form-group">
+              <label class="wa-label" for="wa-email">E-mail</label>
+              <input type="email" name="email" id="wa-email" placeholder="seu@email.com" required class="wa-input" autocomplete="email" />
+            </div>
+            <div class="wa-form-group">
+              <label class="wa-label" for="wa-telefone">WhatsApp</label>
+              <input type="tel" name="telefone" id="wa-telefone" placeholder="(00) 00000-0000" required class="wa-input" autocomplete="tel" />
+            </div>
+
+            <div class="wa-btn-row">
+              <button type="button" id="wa-prev-btn" class="wa-btn wa-btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Voltar
+              </button>
+              <button type="submit" id="wa-submit-btn" class="wa-btn wa-btn-primary">
+                <span class="btn-text">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.464L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.789-4.382 9.792-9.791.001-2.621-1.013-5.086-2.856-6.93C16.368 2.05 13.91 1.037 11.29 1.037c-5.4.001-9.79 4.384-9.793 9.793-.001 1.514.469 2.989 1.359 4.265l-.993 3.624 3.704-.971zm10.73-6.52c-.296-.148-1.748-.862-2.019-.962-.27-.099-.467-.148-.663.149-.197.296-.764.962-.937 1.16-.172.197-.344.222-.64.074-.296-.148-1.25-.46-2.381-1.468-.881-.785-1.475-1.756-1.648-2.052-.172-.296-.018-.456.13-.603.133-.132.296-.346.444-.519.148-.173.197-.296.296-.494.099-.198.05-.37-.025-.519-.074-.148-.663-1.6-.908-2.192-.239-.575-.483-.497-.663-.506-.172-.008-.37-.01-.566-.01s-.514.074-.783.37c-.27.296-1.03 1.008-1.03 2.46s1.056 2.852 1.203 3.05c.148.197 2.078 3.173 5.032 4.45.703.303 1.25.485 1.678.621.706.224 1.348.193 1.857.117.567-.084 1.748-.713 1.995-1.4.246-.688.246-1.28.172-1.4-.074-.122-.271-.19-.567-.34z" />
+                  </svg>
+                  Iniciar conversa
+                </span>
+                <span class="btn-loading" style="display:none;">
+                  <svg class="wa-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)" />
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+                  </svg>
+                  Conectando...
+                </span>
+              </button>
+            </div>
+            <p class="wa-privacy">Ao enviar, você concorda com nossa política de privacidade.</p>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+)}
+
+<script is:inline define:vars={{ webhookUrl, projectSlug, waPhone, fieldLabels }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const floatBtn  = document.getElementById('wa-floating-btn');
+    const overlay   = document.getElementById('wa-modal-overlay');
+    const closeBtn  = document.getElementById('wa-close-btn');
+    const step1     = document.getElementById('wa-step-1');
+    const step2     = document.getElementById('wa-step-2');
+    const nextBtn   = document.getElementById('wa-next-btn');
+    const prevBtn   = document.getElementById('wa-prev-btn');
+    const form      = document.getElementById('wa-multistep-form');
+    const phoneInput = document.getElementById('wa-telefone');
+    const dot1      = document.getElementById('wa-dot-1');
+    const dot2      = document.getElementById('wa-dot-2');
+
+    if (!floatBtn || !overlay || !form) return;
+
+    // ─── Abre/Fecha modal ────────────────────────────────────────────
+    floatBtn.addEventListener('click', () => {
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    const goToStep = (num) => {
+      step1.classList.toggle('active', num === 1);
+      step2.classList.toggle('active', num === 2);
+      if (dot1 && dot2) {
+        dot1.classList.toggle('active', num === 1);
+        dot2.classList.toggle('active', num === 2);
+      }
+    };
+
+    const closeModal = () => {
+      overlay.classList.remove('active');
+      document.body.style.removeProperty('overflow');
+      form.reset();
+      goToStep(1);
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // ─── Máscara de Telefone ─────────────────────────────────────────
+    if (phoneInput) {
+      phoneInput.addEventListener('input', () => {
+        let v = phoneInput.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 7)      v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+        else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+        else if (v.length > 0) v = `(${v}`;
+        phoneInput.value = v;
+      });
+    }
+
+    // ─── Validação de campos do container ───────────────────────────
+    const validateStep = (container) => {
+      let valid = true;
+      let firstInvalid = null;
+
+      container.querySelectorAll('input[required]:not([type="radio"]), select[required], textarea[required]').forEach((field) => {
+        const val = field.value.trim();
+        const empty = !val || (field.tagName === 'SELECT' && val === '');
+        if (empty) {
+          valid = false;
+          field.style.borderColor = '#ef4444';
+          field.style.outline = '2px solid rgba(239,68,68,0.4)';
+          if (!firstInvalid) firstInvalid = field;
+          const clear = () => {
+            field.style.removeProperty('border-color');
+            field.style.removeProperty('outline');
+            field.removeEventListener('input', clear);
+            field.removeEventListener('change', clear);
+          };
+          field.addEventListener('input', clear);
+          field.addEventListener('change', clear);
+        }
+      });
+
+      // Grupos de radio
+      const radioNames = new Set();
+      container.querySelectorAll('input[type="radio"][required]').forEach(r => radioNames.add(r.name));
+      radioNames.forEach(name => {
+        const radios = Array.from(container.querySelectorAll(`input[type="radio"][name="${name}"]`));
+        if (!radios.some(r => r.checked)) {
+          valid = false;
+          if (!firstInvalid) firstInvalid = radios[0];
+        }
+      });
+
+      if (!valid && firstInvalid) firstInvalid.focus();
+      return valid;
+    };
+
+    // ─── Navegação entre etapas ──────────────────────────────────────
+    nextBtn.addEventListener('click', () => {
+      if (validateStep(step1)) goToStep(2);
+    });
+
+    prevBtn.addEventListener('click', () => goToStep(1));
+
+    // ─── Envio: Webhook + WhatsApp redirect ──────────────────────────
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validateStep(step2)) return;
+
+      const phoneDigits = phoneInput.value.replace(/\D/g, '');
+      if (phoneDigits.length !== 11 || phoneDigits.charAt(2) !== '9') {
+        phoneInput.style.borderColor = '#ef4444';
+        phoneInput.style.outline = '2px solid rgba(239,68,68,0.4)';
+        phoneInput.focus();
+        alert('Por favor, insira um WhatsApp celular válido com 11 dígitos (DDD + 9...).');
+        return;
+      }
+
+      const submitBtn  = document.getElementById('wa-submit-btn');
+      const btnText    = submitBtn.querySelector('.btn-text');
+      const btnLoading = submitBtn.querySelector('.btn-loading');
+
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline-flex';
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((v, k) => { data[k] = v.toString(); });
+
+      const capitalized = {};
+      Object.entries(data).forEach(([key, val]) => {
+        capitalized[key.charAt(0).toUpperCase() + key.slice(1)] = val;
+      });
+
+      const trackingRaw = sessionStorage.getItem('dmove_tracking');
+      const tracking = trackingRaw ? JSON.parse(trackingRaw) : {};
+
+      const trackingKeys = [
+        'utm_source', 'utm_medium', 'utm_campaign', 'utm_term',
+        'utm_content', 'utm_id', 'gclid', 'gbraid', 'wbraid',
+        'fbclid', 'fbc', 'fbp', 'external_id', 'event_id',
+      ];
+      const qs = new URLSearchParams();
+      trackingKeys.forEach(k => { if (tracking[k]) qs.set(k, tracking[k]); });
+      const fonte = qs.toString()
+        ? `WhatsApp ${window.location.pathname}?${qs.toString()}`
+        : `WhatsApp ${window.location.pathname}`;
+
+      const now = new Date();
+      const monthsPt = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+      const dateLong = `${monthsPt[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+      const timeAMPM = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
+
+      // Mapeamento de chaves para o n8n do cliente (layout Elementor)
+      const bodyPayload = {};
+      Object.entries(data).forEach(([key, val]) => {
+        let mappedKey = key.charAt(0).toUpperCase() + key.slice(1);
+        if (key === 'nome') mappedKey = 'Nome';
+        else if (key === 'telefone') mappedKey = 'WhatsApp';
+        else if (key === 'email') mappedKey = 'E-mail';
+        else if (key === 'tipo') mappedKey = 'Tipo de evento';
+        else if (key === 'convidados') mappedKey = 'Convidados';
+        else if (key === 'data') mappedKey = 'Data do evento';
+        else if (key === 'horario') mappedKey = 'Horário do evento';
+        else if (key === 'mensagem') mappedKey = 'Mensagem';
+        else if (key === 'empresa') mappedKey = 'Empresa';
+        
+        bodyPayload[mappedKey] = val;
+      });
+
+      // Garante que campos esperados existam
+      const expectedFields = ['Nome', 'WhatsApp', 'E-mail', 'Tipo de evento', 'Convidados', 'Data do evento', 'Horário do evento', 'Mensagem'];
+      expectedFields.forEach(f => {
+        if (bodyPayload[f] === undefined) {
+          bodyPayload[f] = '';
+        }
+      });
+
+      const payload = {
+        ...bodyPayload,
+        Fonte:              fonte,
+        Date:               dateLong,
+        Time:               timeAMPM,
+        'Page URL':         window.location.href,
+        'User Agent':       navigator.userAgent,
+        'Remote IP':        '',
+        'Powered by':       'Elementor',
+        form_id:            'form_whatsapp',
+        form_name:          'form_whatsapp',
+      };
+
+      // Meta CAPI
+      ['fbc', 'fbp', 'external_id', 'event_id'].forEach(k => {
+        if (tracking[k]) payload[k] = tracking[k];
+      });
+
+      try {
+        if (webhookUrl) {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        }
+      } catch (err) {
+        console.error('[WhatsApp Form Error]', err);
+      }
+
+      if (window.dataLayer) {
+        window.dataLayer.push({ event: 'form_submit', form_id: 'form_whatsapp', project: projectSlug, ...capitalized });
+      }
+
+      // Mensagem WhatsApp construída dinamicamente a partir dos campos
+      const msgLines = ['Olá! Gostaria de mais informações:', ''];
+      Object.entries(data).forEach(([key, val]) => {
+        if (!val) return;
+        const label = fieldLabels[key] || (key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '));
+        msgLines.push(`*${label}:* ${val}`);
+      });
+
+      const waUrl = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(msgLines.join('\n'))}`;
+
+      setTimeout(() => {
+        closeModal();
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline-flex';
+        btnLoading.style.display = 'none';
+        window.open(waUrl, '_blank');
+      }, 400);
+    });
+  });
+</script>
+
+<style>
+  .whatsapp-wrapper {
+    position: relative;
+    z-index: 1000;
+  }
+
+  /* ── Botão Flutuante ──────────────────────────────────────────────── */
+  .wa-floating-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #25d366;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+    animation: wa-pulse 2.5s infinite;
+    z-index: 9999;
+  }
+
+  .wa-floating-btn:hover {
+    transform: scale(1.1);
+    background-color: #1ebe5d;
+    animation: none;
+    box-shadow: 0 6px 24px rgba(37, 211, 102, 0.6);
+  }
+
+  @keyframes wa-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(37, 211, 102, 0.6); }
+    70%  { box-shadow: 0 0 0 18px rgba(37, 211, 102, 0);   }
+    100% { box-shadow: 0 0 0 0   rgba(37, 211, 102, 0);   }
+  }
+
+  /* ── Modal Overlay ────────────────────────────────────────────────── */
+  .wa-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0 24px 100px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: 10000;
+  }
+
+  .wa-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── Modal Card ───────────────────────────────────────────────────── */
+  .wa-modal-card {
+    width: 100%;
+    max-width: 360px;
+    background: #111b21;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    transform: translateY(24px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .wa-modal-overlay.active .wa-modal-card {
+    transform: translateY(0) scale(1);
+  }
+
+  /* ── Header ───────────────────────────────────────────────────────── */
+  .wa-header {
+    background: #202c33;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .wa-avatar-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wa-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .wa-avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .wa-online-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 11px;
+    height: 11px;
+    background: #25d366;
+    border: 2px solid #202c33;
+    border-radius: 50%;
+  }
+
+  .wa-details { display: flex; flex-direction: column; gap: 1px; }
+
+  .wa-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #e9edef;
+    line-height: 1.2;
+  }
+
+  .wa-status {
+    font-size: 0.72rem;
+    color: #25d366;
+    font-weight: 500;
+  }
+
+  .wa-close-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .wa-close-btn:hover {
+    color: #e9edef;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* ── Body ─────────────────────────────────────────────────────────── */
+  .wa-body {
+    padding: 16px;
+    background: #0b141a;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+
+  /* ── Balão de mensagem ────────────────────────────────────────────── */
+  .wa-bubble-wrap {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .wa-bubble {
+    background: #202c33;
+    border-radius: 0 10px 10px 10px;
+    padding: 10px 14px 8px;
+    max-width: 88%;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .wa-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 8px 8px 0;
+    border-color: transparent #202c33 transparent transparent;
+  }
+
+  .wa-bubble p {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #e9edef;
+    margin: 0 0 2px;
+  }
+
+  .wa-bubble p:last-of-type { margin-bottom: 6px; }
+
+  .wa-bubble-tick {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2px;
+  }
+
+  /* ── Indicador de progresso ───────────────────────────────────────── */
+  .wa-progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+    margin: 2px 0 -2px;
+  }
+
+  .wa-progress-step {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+    flex-shrink: 0;
+  }
+
+  .wa-progress-step span {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    transition: color 0.3s;
+  }
+
+  .wa-progress-step.active {
+    background: #25d366;
+    border-color: #25d366;
+  }
+
+  .wa-progress-step.active span {
+    color: white;
+  }
+
+  .wa-progress-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    max-width: 60px;
+  }
+
+  /* ── Form ─────────────────────────────────────────────────────────── */
+  .wa-form { display: flex; flex-direction: column; gap: 0; }
+
+  .wa-step {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .wa-step.active {
+    display: flex;
+    animation: wa-slide-in 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  @keyframes wa-slide-in {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .wa-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .wa-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Inputs ───────────────────────────────────────────────────────── */
+  .wa-input {
+    width: 100%;
+    padding: 10px 13px;
+    background: #2a3942;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: #e9edef;
+    font-size: 0.88rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+  }
+
+  .wa-input:focus {
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
+  }
+
+  .wa-input::placeholder { color: rgba(255,255,255,0.25); }
+
+  .wa-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .wa-select option {
+    background: #2a3942;
+    color: #e9edef;
+  }
+
+  .wa-textarea { resize: none; }
+
+  /* ── Radio ────────────────────────────────────────────────────────── */
+  .wa-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .wa-radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    background: #2a3942;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 6px 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .wa-radio-label:has(input:checked) {
+    border-color: #25d366;
+    background: rgba(37,211,102,0.12);
+    color: #25d366;
+  }
+
+  .wa-radio-label input[type="radio"] {
+    display: none;
+  }
+
+  /* ── Botões ───────────────────────────────────────────────────────── */
+  .wa-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s, transform 0.15s;
+    white-space: nowrap;
+  }
+
+  .wa-btn:active { transform: scale(0.97); }
+
+  .wa-btn-primary {
+    background: #25d366;
+    color: white;
+    width: 100%;
+  }
+
+  .wa-btn-primary:hover:not(:disabled) { background: #1ebe5d; }
+
+  .wa-btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .wa-btn-secondary {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.55);
+  }
+
+  .wa-btn-secondary:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+
+  .wa-btn-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .btn-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .wa-spinner { animation: wa-spin 0.9s linear infinite; }
+
+  @keyframes wa-spin { to { transform: rotate(360deg); } }
+
+  .wa-privacy {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.25);
+    text-align: center;
+    margin: 0;
+  }
+
+  /* ── Mobile ───────────────────────────────────────────────────────── */
+  @media (max-width: 480px) {
+    .wa-modal-overlay {
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 0 80px;
+    }
+
+    .wa-modal-card {
+      max-width: 100%;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .wa-floating-btn {
+      bottom: 16px;
+      right: 16px;
+      width: 54px;
+      height: 54px;
+    }
+  }
+</style>

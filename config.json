@@ -1,10 +1,16 @@
 {
-  "project_name": "Nome do Projeto",
-  "project_slug": "slug-do-projeto",
-  "client": "Nome do Cliente",
-  "environment": "development",
+  "project_name": "Rio Alameda Eventos",
+  "project_slug": "rio-alameda",
+  "client": "Rio Alameda Eventos",
+  "environment": "production",
   "tracking": {
-    "gtm_id": "GTM-XXXXXXX",
+    "gtm_id": "GTM-WHHXKF3F",
+    "enabled": true
+  },
+  "whatsapp": {
+    "phone": "5521988253696",
+    "display_name": "Rio Alameda Eventos",
+    "avatar": "/images/whatsapp-avatar.jpg",
     "enabled": true
   },
   "forms": {
@@ -12,7 +18,7 @@
       "id": "lead-form",
       "redirect_on_success": "",
       "webhooks": [
-        "https://n8n.dmove.com.br/webhook/SLUG-DO-PROJETO"
+        "https://server3n8n.dmove.com.br/webhook/rio-alameda"
       ],
       "fields_required": [
         "nome",
@@ -23,12 +29,12 @@
   },
   "deploy": {
     "user": "root",
-    "server": "",
-    "remote_path": "/var/www/dominio.com.br"
+    "server": "157.173.197.116",
+    "remote_path": "/var/www/eventos.rioalamedaeventos.com"
   },
   "meta": {
-    "created_at": "YYYY-MM-DD",
-    "last_updated": "YYYY-MM-DD",
-    "owner": "Responsável"
+    "created_at": "2026-06-17",
+    "last_updated": "2026-06-17",
+    "owner": "Antigravity"
   }
 }

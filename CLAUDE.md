@@ -33,11 +33,12 @@ This is an **Astro static site** (output: `static`) used as a client landing-pag
 ### Key files
 
 - **`config.json`** — project-level config: `project_slug`, GTM ID, form webhook URLs, required fields, and redirect URL. All pages import this at build time.
-- **`src/layouts/Base.astro`** — mandatory wrapper for every page. Accepts `title`, `description`, `ogImage`, `canonical`, `noIndex`, `theme` (`dark`/`light`), `jsonLd` props. Injects GTM, UTM capture, fonts, and JSON-LD automatically based on `config.json`.
+- **`src/layouts/Base.astro`** — mandatory wrapper for every page. Accepts `title`, `description`, `ogImage`, `canonical`, `noIndex`, `theme` (`dark`/`light`), `jsonLd` props. Also accepts `whatsAppStep1Fields` (array of field definitions — same shape as `LeadForm` fields — for the step 1 of the WhatsApp popup) and `whatsAppMessage` (welcome text, use `\n` for line breaks). Injects GTM, UTM capture, fonts, and JSON-LD automatically based on `config.json`.
 - **`src/components/forms/LeadForm.astro`** — reusable lead form component. Reads webhook URL and redirect from props; auto-initializes `forms.ts` via its own `<script>`. Supports a `prefix` prop that scopes all CSS class names to avoid conflicts when the page has its own form styles.
 - **`src/scripts/forms.ts`** — form submission logic. Reads `data-submit-url`, `data-project`, `data-grid-id`, `data-success-id` from the `<form>` element. Handles honeypot, loading state, GTM push (`form_start`, `form_submit`, `form_error`), success state reveal, and redirect. Attaches tracking data from `sessionStorage` (UTMs, click IDs) to every payload.
 - **`src/scripts/smooth-scroll.ts`** — Lenis smooth scroll; exposes instance as `window.__lenis`.
 - **`src/components/tracking/UTMCapture.astro`** — captures UTM params and click IDs into `sessionStorage` key `dmove_tracking`; called automatically by `Base.astro` when `config.tracking.enabled` is true.
+- **`src/components/layout/WhatsAppModal.astro`** — floating WhatsApp button (bottom-right) + 2-step popup form. Step 1 is configurable via `step1Fields` prop (define the custom/interest fields). Step 2 is always nome/email/telefone. On submit: posts to the same `lead-form` webhook in `config.json`, pushes a GTM event, then opens `api.whatsapp.com/send` with a pre-filled message built from all field values. Phone/avatar/name come from `config.json > whatsapp`. Enable/disable via `config.json > whatsapp.enabled`.
 
 ### UI components (`src/components/ui/`)
 

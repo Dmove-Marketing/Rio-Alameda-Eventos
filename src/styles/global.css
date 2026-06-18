@@ -48,38 +48,38 @@ button {
 
 /* === CSS Variables (customizar por projeto) === */
 :root {
-  /* Cores — ajuste para o cliente */
-  --color-primary: #C3161C;
-  --color-primary-dark: #990C11;
-  --color-secondary: #C3161C;
-  --color-accent: #C3161C;
+  /* Cores — ajuste para o cliente (Neutro Base) */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #6b7280;
+  --color-accent: #10b981;
 
   /* Backgrounds */
-  --bg-primary: #000000;
-  --bg-secondary: #0E0604;
-  --bg-card: #111111;
-  --bg-elevated: #1a1a1a;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-elevated: #f1f5f9;
 
   /* Texto */
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --text-muted: #999999;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
   /* Gradientes */
   --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   --gradient-subtle: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
-  --gradient-glow: radial-gradient(ellipse at center, rgba(195, 22, 28, 0.15), transparent 70%);
+  --gradient-glow: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15), transparent 70%);
 
   /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
   --glass-blur: blur(20px);
 
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 30px rgba(195, 22, 28, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.3);
 
   /* Border radius */
   --radius-sm: 8px;
@@ -219,7 +219,7 @@ p {
 
 .form-input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(195, 22, 28, 0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .form-input::placeholder {
@@ -292,23 +292,23 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* === Light Mode === */
-[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-elevated: #f1f5f9;
+/* === Dark Mode === */
+[data-theme="dark"] {
+  --bg-primary: #090d16;
+  --bg-secondary: #0f172a;
+  --bg-card: #1e293b;
+  --bg-elevated: #334155;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
 
-  --glass-bg: rgba(0, 0, 0, 0.03);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
 }
 
 /* === Text Utilities === */

@@ -111,6 +111,64 @@ function fixExternalScripts(html) {
   return html.replace(/<script\s+src/gi, '<script is:inline src');
 }
 
+// ─── Icon library detector ────────────────────────────────────────────────────
+// Escaneia o HTML em busca de classes de ícones e retorna os <link> CDN corretos.
+// Bibliotecas detectadas: Font Awesome 6, Line Awesome, Bootstrap Icons, Simple Line Icons.
+
+function detectIconLibraries(html) {
+  const links = [];
+
+  // Font Awesome 6 Free — classes: fa-solid, fa-regular, fa-brands, fa-*
+  if (/\bfa-(solid|regular|brands|thin|duotone|\w+-fa|[a-z-]+)\b/.test(html) || /class=["'][^"']*\bfa-\w/.test(html)) {
+    links.push(
+      `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W==" crossorigin="anonymous" referrerpolicy="no-referrer" />`
+    );
+  }
+
+  // Line Awesome — classes: la-*, las, lar, lab, lal, lad
+  if (/class=["'][^"']*\b(la-\w|las\b|lar\b|lab\b)/.test(html)) {
+    links.push(
+      `<link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" />`
+    );
+  }
+
+  // Bootstrap Icons — classes: bi-*
+  if (/class=["'][^"']*\bbi-\w/.test(html)) {
+    links.push(
+      `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />`
+    );
+  }
+
+  // Simple Line Icons — classes: icon-*
+  if (/class=["'][^"']*\bicon-[a-z]/.test(html)) {
+    links.push(
+      `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css" />`
+    );
+  }
+
+  return links;
+}
+
+// ─── Component warning detector ───────────────────────────────────────────────
+// Escaneia o HTML gerado e retorna avisos para componentes que precisam de
+// atenção manual após o scaffold.
+
+function detectComponentWarnings(html) {
+  const checks = [
+    [/class=["'][^"']*\bswiper\b[^"']*["']/i,             'Carousel/Swiper — considere componente com lazy-load otimizado'],
+    [/class=["'][^"']*\bowl-carousel\b[^"']*["']/i,        'OWL Carousel — migrar para Swiper ou componente nativo'],
+    [/class=["'][^"']*\bslick-slider\b[^"']*["']/i,        'Slick Slider — migrar para Swiper ou componente nativo'],
+    [/class=["'][^"']*\belementor-tabs\b[^"']*["']/i,      'Tabs (Elementor) — substituir por <details> nativo ou componente Astro'],
+    [/class=["'][^"']*\belementor-accordion\b[^"']*["']/i, 'Accordion (Elementor) — substituir por <details>/<summary> nativos'],
+    [/class=["'][^"']*\belementor-gallery\b[^"']*["']/i,   'Galeria (Elementor) — verifique lazy-load das imagens'],
+    [/class=["'][^"']*\belementor-counter\b[^"']*["']/i,   'Counter animado — inspecione o script JS gerado'],
+    [/class=["'][^"']*\belementor-progress\b[^"']*["']/i,  'Progress bar (Elementor) — inspecione animação JS'],
+    [/class=["'][^"']*\bwoocommerce\b[^"']*["']/i,         'WooCommerce — componentes de loja não são migrados automaticamente'],
+    [/\bdata-aos=/i,                                        'AOS animate-on-scroll — substitua por data-animate do template'],
+  ];
+  return checks.filter(([rx]) => rx.test(html)).map(([, msg]) => msg);
+}
+
 // ─── Indentation helper ───────────────────────────────────────────────────────
 
 function getIndentAt(str, pos) {
@@ -132,11 +190,15 @@ function replaceImages(html) {
     const cls = (attrs.match(/\bclass=["']([^"']*)["']/) || [])[1];
     const style = (attrs.match(/\bstyle=["']([^"']*)["']/) || [])[1];
 
+    const srcMatch = attrs.match(/\bsrc=["']([^"']*)["']/);
+    const originalSrc = srcMatch ? srcMatch[1] : '';
+    const imgFilename = originalSrc ? path.basename(originalSrc).split('?')[0] : 'placeholder.jpg';
+
     hasImg = true;
     const isPriority = imgCount === 0;
     imgCount++;
 
-    let props = `src="/images/placeholder.jpg" alt="${alt}"`;
+    let props = `src="${imgFilename}" alt="${alt}"`;
     if (widthStr) props += ` width={${widthStr}}`;
     if (heightStr) props += ` height={${heightStr}}`;
     if (cls) props += ` class="${cls}"`;
@@ -156,15 +218,47 @@ function replaceVideos(html) {
 
   const result = html.replace(/<video[\s\S]*?<\/video>/gi, (match) => {
     hasVideo = true;
-    const cls = (match.match(/\bclass=["']([^"']*)["']/) || [])[1];
+    const cls     = (match.match(/\bclass=["']([^"']*)["']/) || [])[1];
+    const poster  = (match.match(/\bposter=["']([^"']*)["']/) || [])[1] || '';
+    // Preferir <source> interna, depois src= direto do <video>
+    const srcFromSource = (match.match(/<source[^>]*\bdata-src=["']([^"']+)["']/) ||
+                           match.match(/<source[^>]*\bsrc=["']([^"']+)["']/) || [])[1] || '';
+    const srcFromAttr   = (match.match(/\bsrc=["']([^"']+\.mp4[^"']*)["']/) ||
+                           match.match(/\bsrc=["']([^"']+)["']/) || [])[1] || '';
+    const rawSrc  = srcFromSource || srcFromAttr;
+    const videoTitle = (match.match(/\btitle=["']([^"']*)["']/) ||
+                        match.match(/\bdata-title=["']([^"']*)["']/) ||
+                        match.match(/\baria-label=["']([^"']*)["']/) || [])[1] || 'Vídeo';
 
-    let props = `src="/videos/placeholder.mp4" poster="/images/placeholder-video.jpg" title="Placeholder Video" description="Video placeholder" uploadDate="2025-01-01" duration="PT1M"`;
+    const videoSrc  = rawSrc && rawSrc.startsWith('http') ? rawSrc : '/videos/placeholder.mp4';
+    const posterSrc = poster && poster.startsWith('http') ? poster : '/images/placeholder-video.jpg';
+    const year      = new Date().getFullYear();
+
+    let props = `src="${videoSrc}" poster="${posterSrc}" title="${videoTitle.replace(/"/g, '&quot;')}" description="Vídeo" uploadDate="${year}-01-01" duration="PT1M"`;
     if (cls) props += ` class="${cls}"`;
 
     return `<Video ${props} />`;
   });
 
   return { html: result, hasVideo };
+}
+
+// ─── YouTube iframe optimizer ─────────────────────────────────────────────────
+// Converte embeds do YouTube para youtube-nocookie.com e adiciona loading="lazy".
+
+function replaceYouTubeIframes(html) {
+  return html.replace(
+    /<iframe([^>]*)src=["'](?:https?:)?\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]+)([^"']*)["']([^>]*)(?:><\/iframe>|\/?>)/gi,
+    (match, _before, videoId, params, _after) => {
+      const cls    = (match.match(/\bclass=["']([^"']*)["']/) || [])[1];
+      const width  = (match.match(/\bwidth=["']?(\d+)["']?/) || [])[1] || '560';
+      const height = (match.match(/\bheight=["']?(\d+)["']?/) || [])[1] || '315';
+      const title  = (match.match(/\btitle=["']([^"']*)["']/) || [])[1] || 'Vídeo';
+      // Remove autoplay para conformidade com políticas de privacidade
+      const cleanParams = params.replace(/[?&]autoplay=1/gi, '');
+      return `<iframe src="https://www.youtube-nocookie.com/embed/${videoId}${cleanParams}" width="${width}" height="${height}" title="${title}" loading="lazy" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen${cls ? ` class="${cls}"` : ''}></iframe>`;
+    }
+  );
 }
 
 // ─── <form> → <LeadForm> ─────────────────────────────────────────────────────
@@ -201,25 +295,48 @@ function findFormBounds(html) {
 function extractFormFields(formHtml) {
   const nameMap = { name: 'nome', whatsapp: 'telefone', phone: 'telefone', 'e-mail': 'email' };
   const fields = [];
+  const radioGroups = new Map(); // name → { name, type:'select', options, required }
 
   const inputRx = /<input\s([^>]*?)(?:\s\/)?>/gi;
   let m;
   while ((m = inputRx.exec(formHtml)) !== null) {
-    const attrs = m[1];
-    let name = (attrs.match(/\bname=["']([^"']*)["']/) || [])[1];
-    const rawType = ((attrs.match(/\btype=["']([^"']*)["']/) || [])[1] || 'text').toLowerCase();
+    const attrs    = m[1];
+    let name       = (attrs.match(/\bname=["']([^"']*)["']/) || [])[1];
+    const rawType  = ((attrs.match(/\btype=["']([^"']*)["']/) || [])[1] || 'text').toLowerCase();
     const placeholder = (attrs.match(/\bplaceholder=["']([^"']*)["']/) || [])[1] || '';
     const required = /\brequired\b/i.test(attrs);
 
     if (!name) continue;
-    if (['submit', 'button', 'hidden', 'reset', 'image', 'checkbox', 'radio'].includes(rawType)) continue;
+    if (['submit', 'button', 'hidden', 'reset', 'image', 'checkbox'].includes(rawType)) continue;
     if (name === 'website') continue;
 
     name = nameMap[name.toLowerCase()] || name;
+
+    // Agrupa radio buttons como <select> com opções
+    if (rawType === 'radio') {
+      const value = (attrs.match(/\bvalue=["']([^"']*)["']/) || [])[1] || '';
+      if (!radioGroups.has(name)) {
+        radioGroups.set(name, { name, type: 'select', placeholder: '', required, options: [] });
+      }
+      const group = radioGroups.get(name);
+      if (value && !group.options.some(o => o.value === value)) {
+        group.options.push({ value, label: value });
+      }
+      continue;
+    }
+
     if (fields.some(f => f.name === name)) continue;
 
     const type = ['text', 'email', 'tel', 'number'].includes(rawType) ? rawType : 'text';
-    fields.push({ name, type, placeholder, required });
+    const minlength = (attrs.match(/\bminlength=["']?(\d+)["']?/) || [])[1];
+    const maxlength = (attrs.match(/\bmaxlength=["']?(\d+)["']?/) || [])[1];
+    const pattern   = (attrs.match(/\bpattern=["']([^"']*)["']/) || [])[1];
+
+    const field = { name, type, placeholder, required };
+    if (minlength) field.minlength = parseInt(minlength, 10);
+    if (maxlength) field.maxlength = parseInt(maxlength, 10);
+    if (pattern)   field.pattern   = pattern;
+    fields.push(field);
   }
 
   const taRx = /<textarea\s([^>]*?)>/gi;
@@ -258,6 +375,11 @@ function extractFormFields(formHtml) {
     fields.push({ name, type: 'select', placeholder: '', required, options });
   }
 
+  // Adiciona grupos de radio que não conflitam com um <select> explícito
+  for (const [name, group] of radioGroups) {
+    if (!fields.some(f => f.name === name)) fields.push(group);
+  }
+
   return fields;
 }
 
@@ -277,6 +399,9 @@ function buildFieldsProp(fields, indent) {
     let parts = [`name: '${f.name}'`, `type: '${f.type}'`];
     parts.push(`placeholder: '${(f.placeholder || '').replace(/'/g, "\\'")}'`);
     parts.push(`required: ${f.required}`);
+    if (f.minlength) parts.push(`minlength: ${f.minlength}`);
+    if (f.maxlength) parts.push(`maxlength: ${f.maxlength}`);
+    if (f.pattern)   parts.push(`pattern: '${f.pattern.replace(/'/g, "\\'")}'`);
 
     if (f.type === 'select' && f.options?.length) {
       const opts = f.options
@@ -337,6 +462,8 @@ function replaceAllForms(html) {
 
 // ─── Main loop ────────────────────────────────────────────────────────────────
 
+const forceFlag = process.argv.includes('--force');
+
 if (!fs.existsSync(sourceDir)) {
   console.error(`\n❌ Erro: Diretório "${sourceDir}" não encontrado.\n`);
   process.exit(1);
@@ -348,8 +475,9 @@ if (!files.length) {
   process.exit(0);
 }
 
-console.log(`\n🚀 Iniciando conversão de ${files.length} arquivo(s)...\n`);
+console.log(`\n🚀 Iniciando conversão de ${files.length} arquivo(s)...${forceFlag ? ' (--force: sobrescrevendo existentes)' : ''}\n`);
 let successCount = 0;
+let skippedCount = 0;
 
 files.forEach(filename => {
   const sourceFile = path.join(sourceDir, filename);
@@ -360,6 +488,12 @@ files.forEach(filename => {
   const destAstroFile = path.join(destPagesDir, `${baseName}.astro`);
   const destCssFile = path.join(destStylesDir, `${baseName}.css`);
   const destJsFile = path.join(destScriptsDir, `${baseName}.js`);
+
+  if (!forceFlag && fs.existsSync(destAstroFile)) {
+    console.log(`⏭️  [${filename}] → ${baseName}.astro já existe, pulando. Use --force para sobrescrever.`);
+    skippedCount++;
+    return;
+  }
 
   try {
     const htmlContent = fs.readFileSync(sourceFile, 'utf8');
@@ -397,7 +531,14 @@ files.forEach(filename => {
     const { html: bodyAfterVideo, hasVideo } = replaceVideos(body);
     body = bodyAfterVideo;
 
+    body = replaceYouTubeIframes(body);
+
+    const componentWarnings = detectComponentWarnings(body);
+
     const hasStaticMap = body.includes('<StaticMap ') || body.includes("maps.google.com/maps/embed");
+
+    // Detecção automática de bibliotecas de ícones
+    const iconLinks = detectIconLibraries(body);
 
     const imports = [
       `import Base from '../layouts/Base.astro';`,
@@ -416,13 +557,27 @@ files.forEach(filename => {
     if (meta.canonical) baseOpen += `\n  canonical="${meta.canonical}"`;
     baseOpen += `\n>`;
 
+    // Bloco de head com CDNs de ícones detectados automaticamente
+    const headSlot = iconLinks.length > 0
+      ? `\n<Fragment slot="head">\n${iconLinks.map(l => `  ${l}`).join('\n')}\n</Fragment>`
+      : '';
+
     const pageScriptBlock = hasJs
       ? `\n<script>\n  import '../scripts/${baseName}.js';\n</script>`
       : '';
 
+    // Adiciona import de Fragment se necessário
+    if (iconLinks.length > 0 && !imports.includes(`import { Fragment } from 'astro/jsx-runtime';`)) {
+      imports.unshift(`import { Fragment } from 'astro/jsx-runtime';`);
+    }
+
+    const warningsBlock = componentWarnings.length > 0
+      ? `<!-- ⚠️ Componentes para revisar após scaffold:\n${componentWarnings.map(w => `  - ${w}`).join('\n')}\n-->\n`
+      : '';
+
     const finalAstro =
       `---\n// Gerado a partir de: ${filename}\n${imports.join('\n')}\n---\n\n` +
-      `${baseOpen}\n${body}\n</Base>${pageScriptBlock}\n`;
+      `${warningsBlock}${baseOpen}${headSlot}\n${body}\n</Base>${pageScriptBlock}\n`;
 
     fs.writeFileSync(destAstroFile, finalAstro, 'utf8');
 
@@ -435,6 +590,10 @@ files.forEach(filename => {
     ].filter(Boolean).join(', ');
 
     console.log(`✅ [${filename}] → ${baseName}.astro${flags ? ` (${flags})` : ''}`);
+    if (componentWarnings.length > 0) {
+      console.log(`   ⚠️  Componentes para revisar:`);
+      componentWarnings.forEach(w => console.log(`      • ${w}`));
+    }
     if (hasForm && hasJs && jsHasFormCode) {
       console.warn(`   ⚠️  ${baseName}.js contém código de formulário original.`);
       console.warn(`      O LeadForm + forms.ts já cuida disso — remova esse trecho do .js para evitar conflito.`);
@@ -447,7 +606,10 @@ files.forEach(filename => {
   }
 });
 
-console.log(`\n🎉 Concluído! ${successCount} arquivo(s) convertido(s).`);
+console.log(`\n🎉 Concluído! ${successCount} arquivo(s) convertido(s)${skippedCount > 0 ? `, ${skippedCount} pulado(s) (já migrados)` : ''}.`);
 if (successCount > 0) {
-  console.log('👉 Revise title, description, ogImage e canonical em cada .astro gerado.\n');
+  console.log('👉 Revise title, description, ogImage e canonical em cada .astro gerado.');
+}
+if (skippedCount > 0) {
+  console.log('💡 Para regenerar páginas existentes: npm run scaffold -- --force\n');
 }
