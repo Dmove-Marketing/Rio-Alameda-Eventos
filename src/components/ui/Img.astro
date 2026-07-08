@@ -24,20 +24,34 @@ const {
   style,
 } = Astro.props;
 
+const isRemote = /^https?:\/\//.test(src);
+
 const images = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/images/**/*.{jpg,jpeg,png,webp,avif,gif}',
   { eager: true }
 );
 
 const key = `/src/assets/images/${src}`;
-const mod = images[key];
+const mod = isRemote ? null : images[key];
 
-if (!mod) {
+if (!isRemote && !mod) {
   console.warn(`[Img] imagem não encontrada: ${key}`);
 }
 ---
 
-{mod ? (
+{isRemote ? (
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={height ?? width}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : undefined}
+    quality={quality}
+    class={className}
+    style={style}
+  />
+) : mod ? (
   <Image
     src={mod.default}
     alt={alt}

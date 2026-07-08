@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import config from '../../config.json';
 import Img from '../components/ui/Img.astro';
 import LeadForm from '../components/forms/LeadForm.astro';
+import StaticMap from '../components/ui/StaticMap.astro';
 import '../styles/eventos-corporativos.css';
 import '@fontsource/bebas-neue';
 import '@fontsource/roboto/400.css';
@@ -11,17 +12,17 @@ import '@fontsource/roboto/700.css';
 
 import { getImage } from 'astro:assets';
 import imgEquilibrioBg from '../assets/images/29988650_158-Convertido-scaled.webp';
-import imgEquilibrioBox from '../assets/images/WhatsApp-Image-2025-01-14-at-11.28.10-scaled.jpeg';
 import imgEstruturaBg from '../assets/images/grain-8-scaled.jpg';
 import imgDividerBg from '../assets/images/WhatsApp-Image-2025-04-06-at-12.27.29-scaled.jpeg';
-import imgContatoBg from '../assets/images/imgi_1_516514976_17885575200308417_3232230295027353569_n.jpg';
 import fontBeyondInfinity from '../assets/fonts/Beyond-Infinity-Demo.woff';
 
 const optEquilibrioBg = await getImage({ src: imgEquilibrioBg, format: 'webp', quality: 80, width: 1200 });
-const optEquilibrioBox = await getImage({ src: imgEquilibrioBox, format: 'webp', quality: 80, width: 800 });
+const optEquilibrioBox = await getImage({ src: 'https://media.dmove.com.br/clients/rioalamedaeventos/photos/sobre-rio-alameda_resultado.webp', format: 'webp', quality: 80, width: 800, inferSize: true });
 const optEstruturaBg = await getImage({ src: imgEstruturaBg, format: 'webp', quality: 75, width: 1000 });
 const optDividerBg = await getImage({ src: imgDividerBg, format: 'webp', quality: 75, width: 1200 });
-const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality: 80, width: 1200 });
+
+const enderecoRioAlameda = 'Clube Casa de Espanha, R. Maria Eugênia, 300 - Humaitá, Rio de Janeiro - RJ, 22261-080';
+const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(enderecoRioAlameda)}&output=embed`;
 ---
 
 <Base
@@ -32,19 +33,24 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
   whatsAppStep1Fields={[
     { name: 'data', type: 'text', placeholder: 'Data do evento', required: true },
     { name: 'horario', type: 'text', placeholder: 'Horário do evento', required: true },
-    { name: 'convidados', type: 'number', placeholder: 'N° de Pessoas (convidados)', required: true },
+    { name: 'convidados', type: 'select', placeholder: '', required: true, options: [
+      { value: '', label: 'N° de Pessoas (convidados)' },
+      { value: 'Menos de 100', label: 'Menos de 100' },
+      { value: '100-300', label: '100-300' },
+      { value: '300-500', label: '300-500' },
+      { value: '500-1000', label: '500-1000' },
+      { value: '1000+', label: '1000+' }
+    ] },
     { name: 'empresa', type: 'text', placeholder: 'Empresa', required: true },
     { name: 'tipo', type: 'select', placeholder: '', required: true, options: [
       { value: '', label: 'Tipo de evento' },
-      { value: 'Confraternização corporativa', label: 'Confraternização corporativa' },
-      { value: 'Corporativo', label: 'Corporativo' },
-      { value: 'Feiras e Exposições', label: 'Feiras e Exposições' },
-      { value: 'Masterclass e Palestras', label: 'Masterclass e Palestras' },
-      { value: 'Mentorias e Treinamentos', label: 'Mentorias e Treinamentos' },
-      { value: 'Offsite corporativo', label: 'Offsite corporativo' },
-      { value: 'Reuniões de Networking', label: 'Reuniões de Networking' },
-      { value: 'Workshops, Conferências e Seminários', label: 'Workshops, Conferências e Seminários' },
-      { value: 'Outros', label: 'Outros' }
+      { value: 'Feiras corporativas', label: 'Feiras corporativas' },
+      { value: 'Congressos', label: 'Congressos' },
+      { value: 'Convenções', label: 'Convenções' },
+      { value: 'Treinamentos empresariais', label: 'Treinamentos empresariais' },
+      { value: 'Lançamentos de produtos', label: 'Lançamentos de produtos' },
+      { value: 'Eventos institucionais', label: 'Eventos institucionais' },
+      { value: 'Colações de grau', label: 'Colações de grau' }
     ] }
   ]}
   whatsAppMessage="Olá, vamos conversar?\nEstamos ansiosos para saber mais sobre seu evento! 🎉"
@@ -56,7 +62,7 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
     <link rel="preconnect" href="https://fast.wistia.net" />
     <link rel="preconnect" href="https://embed-cloudfront.wistia.com" crossorigin />
     <link rel="preload" href={fontBeyondInfinity} as="font" type="font/woff" crossorigin />
-    <link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" media="print" onload="this.media='all'" />
+<link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" /></noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap" /></noscript>
@@ -76,13 +82,26 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
         <Img src="rio-alameda-sem-fundo-branca-e1758045596842.png" alt="Rio Alameda Logo" width={130} height={94} class="logo-img" priority />
       </div>
       <div class="hero-content">
-        <h2 class="hero-title">Seu evento corporativo <br /> com vista para o</h2>
-        <h1 class="hero-accent">Cristo Redentor</h1>
-        <p class="hero-description">Um espaço sofisticado na Zona Sul do Rio, onde estrutura, localização e serviços de alto padrão se conectam para elevar a experiência do seu evento empresarial</p>
+        <h2 class="hero-title">Eventos corporativos <br/> de grande porte no</h2>
+        <h1 class="hero-accent">Rio de Janeiro</h1>
+        <p class="hero-description">Convenções, feiras, congressos, lançamentos, colações de grau e confraternizações empresariais para 300 a 1.500 convidados, com estrutura completa em uma das localizações mais estratégicas da Zona Sul do Rio de Janeiro.</p>
       </div>
       <div class="hero-actions">
-        <a class="btn-primary" href="#contato">Solicite um orçamento</a>
+        <a class="btn-primary" href="#contato">Solicitar proposta</a>
       </div>
+    </div>
+  </section>
+
+  <!-- Autoridade Section -->
+  <section class="autoridade-section">
+    <div class="autoridade-container">
+      <span class="autoridade-item">825 m² Área livre</span>
+      <span class="autoridade-divider">|</span>
+      <span class="autoridade-item">Até 1.500 convidados</span>
+      <span class="autoridade-divider">|</span>
+      <span class="autoridade-item">Vista para o Cristo Redentor</span>
+      <span class="autoridade-divider">|</span>
+      <span class="autoridade-item">Zona Sul do Rio de Janeiro</span>
     </div>
   </section>
 
@@ -92,85 +111,190 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
       <div class="equilibrio-box">
         <div class="equilibrio-content">
           <div class="section-title-wrapper">
-            <h2 class="section-title">O perfeito equilíbrio entre</h2>
-            <h3 class="section-subtitle">cidade<span class="accent-dot">,</span> natureza e neg<span class="accent-dot">ó</span>cios</h3>
+            <h2 class="section-title">Quando o seu evento exige espaço, logística e flexibilidade,</h2>
+            <h3 class="section-subtitle">o Rio Alameda entrega <br>a estrutura certa</h3>
           </div>
-          <p class="section-text">Localizado estrategicamente na Zona Sul do Rio, o Rio Alameda Eventos conta com 1.000 m² de área, pé-direito alto e uma vista deslumbrante para o Cristo Redentor.<br />Aqui, sua empresa encontra a liberdade para personalizar cada detalhe e transformar encontros, convenções e celebrações corporativas em experiências marcantes.</p>
+          <p class="section-text">Projetado para receber eventos de grande porte, o Rio Alameda combina ampla área livre, pé-direito alto, infraestrutura completa e localização estratégica para atender projetos corporativos complexos.<br>
+Da montagem de feiras e convenções às plenárias, lançamentos e confraternizações empresariais, cada detalhe foi pensado para oferecer fluidez operacional, conforto e uma experiência à altura da sua marca.</p>
         </div>
         <div class="equilibrio-image" style={`background-image: url(${optEquilibrioBox.src});`}></div>
       </div>
     </div>
   </section>
 
-  <!-- Estrutura Section -->
-  <section class="estrutura-section" style={`background-image: url(${optEstruturaBg.src});`}>
-    <div class="estrutura-container">
-      <div class="estrutura-header">
-        <h2 class="section-title dark-text">A estrutura completa para</h2>
-        <h3 class="section-subtitle white-text">o seu evento corporativo</h3>
+  <!-- Versatilidade Section -->
+  <section class="versatilidade-section" style={`background-image: url(${optEstruturaBg.src});`}>
+    <div class="versatilidade-container">
+      <div class="versatilidade-header">
+        <h2 class="section-title dark-text">Ideal para eventos corporativos</h2>
+        <h3 class="section-subtitle white-text">de grande porte</h3>
       </div>
-      <p class="section-text dark-text">Com 825 m² de área livre, o Rio Alameda Eventos é o cenário perfeito para convenções, treinamentos, confraternizações e lançamentos. O espaço oferece acessibilidade, estacionamento, climatização e camarim exclusivo, garantindo conforto, eficiência e uma experiência completa para sua equipe e convidados.</p>
-      <div class="estrutura-actions">
-        <a class="btn-dark" href="#contato">Solicite um orçamento</a>
+      <div class="formats-grid">
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Feiras<br />corporativas</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Congressos</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M323.4 85.2l-96.8 78.4c-16.1 13-19.2 36.4-7 53.1c12.9 17.8 38 21.3 55.3 7.8l99.3-77.2c7-5.4 17-4.2 22.5 2.8s4.2 17-2.8 22.5l-20.9 16.2L512 316.8 512 128l-.7 0-3.9-2.5L434.8 79c-15.3-9.8-33.2-15-51.4-15c-21.8 0-43 7.5-60 21.2zm22.8 124.4l-51.7 40.2C263 274.4 217.3 268 193.7 235.6c-22.2-30.5-16.6-73.1 12.7-96.8l83.2-67.3c-11.6-4.9-24.1-7.4-36.8-7.4C234 64 215.7 69.6 200 80l-72 48 0 224 28.2 0 91.4 83.4c19.6 17.9 49.9 16.5 67.8-3.1c5.5-6.1 9.2-13.2 11.1-20.6l17 15.6c19.5 17.9 49.9 16.6 67.8-2.9c4.5-4.9 7.8-10.6 9.9-16.5c19.4 13 45.8 10.3 62.1-7.5c17.9-19.5 16.6-49.9-2.9-67.8l-134.2-123zM16 128c-8.8 0-16 7.2-16 16L0 352c0 17.7 14.3 32 32 32l32 0c17.7 0 32-14.3 32-32l0-224-80 0zM48 320a16 16 0 1 1 0 32 16 16 0 1 1 0-32zM544 128l0 224c0 17.7 14.3 32 32 32l32 0c17.7 0 32-14.3 32-32l0-208c0-8.8-7.2-16-16-16l-80 0zm32 208a16 16 0 1 1 32 0 16 16 0 1 1 -32 0z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Convenções</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M208 352c-2.39 0-4.78.35-7.06 1.09C187.98 357.3 174.35 360 160 360c-14.35 0-27.98-2.7-40.95-6.91-2.28-.74-4.66-1.09-7.05-1.09C49.94 352-.33 402.48 0 464.62.14 490.88 21.73 512 48 512h224c26.27 0 47.86-21.12 48-47.38.33-62.14-49.94-112.62-112-112.62zm-48-32c53.02 0 96-42.98 96-96s-42.98-96-96-96-96 42.98-96 96 42.98 96 96 96zM592 0H208c-26.47 0-48 22.25-48 49.59V96c23.42 0 45.1 6.78 64 17.8V64h352v288h-64v-64H384v64h-76.24c19.1 16.69 33.12 38.73 39.69 64H592c26.47 0 48-22.25 48-49.59V49.59C640 22.25 618.47 0 592 0z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Treinamentos<br />empresariais</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2l0 82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9l0-107.2c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Lançamentos<br />de produtos</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M240.1 4.2c9.8-5.6 21.9-5.6 31.8 0l171.8 98.1L448 104l0 .9 47.9 27.4c12.6 7.2 18.8 22 15.1 36s-16.4 23.8-30.9 23.8L32 192c-14.5 0-27.2-9.8-30.9-23.8s2.5-28.8 15.1-36L64 104.9l0-.9 4.4-1.6L240.1 4.2zM64 224l64 0 0 192 40 0 0-192 64 0 0 192 48 0 0-192 64 0 0 192 40 0 0-192 64 0 0 196.3c.6 .3 1.2 .7 1.8 1.1l48 32c11.7 7.8 17 22.4 12.9 35.9S494.1 512 480 512L32 512c-14.1 0-26.5-9.2-30.6-22.7s1.1-28.1 12.9-35.9l48-32c.6-.4 1.2-.7 1.8-1.1L64 224z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Eventos<br />institucionais</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9l0 28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5l0-24.6c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Colações<br />de grau</h4>
+        </div>
+      </div>
+    </div>  </section>
+
+  <!-- Estrutura Section -->
+  <section class="estrutura-section" style={`background-image: url(${optEquilibrioBg.src});`}>
+    <div class="estrutura-container">
+      <div class="estrutura-dark-box">
+        <div class="estrutura-header">
+          <h2 class="section-title">O Rio Alameda foi projetado para</h2>
+          <h3 class="section-subtitle">eventos que precisam de escala</h3>
+        </div>
+        <p class="section-text">Por sua estrutura e capacidade, o espaço é recomendado principalmente para eventos com mais de 300 participantes.
+Para formatos menores, existem outras alternativas mais adequadas. Nosso foco é atender projetos que exigem ampla capacidade, operação estruturada e máxima flexibilidade.</p>
+        <div class="estrutura-formatos-grid">
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/banquete-rio-alameda_resultado.webp" alt="Banquete" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Banquete</h4>
+          </div>
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/coquetel-rio-alameda_resultado.webp" alt="Coquetel" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Coquetel</h4>
+          </div>
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/auditorio-rio-alameda_resultado.webp" alt="Plenária/Auditório" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Plenária/Auditório</h4>
+          </div>
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/show-rio-alameda_resultado.webp" alt="Show/Festa" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Show/Festa</h4>
+          </div>
+        </div>
+        <div class="estrutura-actions">
+          <a class="btn-primary" href="#contato">Solicite um orçamento</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contratantes Section -->
+  <section class="versatilidade-section contratantes-section" style={`background-image: url(${optEstruturaBg.src});`}>
+    <div class="versatilidade-container">
+      <div class="versatilidade-header">
+        <h2 class="section-title dark-text">Quem realiza eventos no</h2>
+        <h3 class="section-subtitle white-text">Rio Alameda</h3>
+      </div>
+      <div class="formats-grid">
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zM329 305c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-95 95-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L329 305z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Agências<br />de eventos</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M48 0C21.5 0 0 21.5 0 48L0 464c0 26.5 21.5 48 48 48l96 0 0-80c0-26.5 21.5-48 48-48s48 21.5 48 48l0 80 96 0c26.5 0 48-21.5 48-48l0-416c0-26.5-21.5-48-48-48L48 0zM64 240c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zm112-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zM80 96l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zM272 96l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Empresas</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M72 88a56 56 0 1 1 112 0A56 56 0 1 1 72 88zM64 245.7C54 256.9 48 271.8 48 288s6 31.1 16 42.3l0-84.7zm144.4-49.3C178.7 222.7 160 261.2 160 304c0 34.3 12 65.8 32 90.5l0 21.5c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32l0-26.8C26.2 371.2 0 332.7 0 288c0-61.9 50.1-112 112-112l32 0c24 0 46.2 7.5 64.4 20.3zM448 416l0-21.5c20-24.7 32-56.2 32-90.5c0-42.8-18.7-81.3-48.4-107.7C449.8 183.5 472 176 496 176l32 0c61.9 0 112 50.1 112 112c0 44.7-26.2 83.2-64 101.2l0 26.8c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32zm8-328a56 56 0 1 1 112 0A56 56 0 1 1 456 88zM576 245.7l0 84.7c10-11.3 16-26.1 16-42.3s-6-31.1-16-42.3zM320 32a64 64 0 1 1 0 128 64 64 0 1 1 0-128zM240 304c0 16.2 6 31 16 42.3l0-84.7c-10 11.3-16 26.1-16 42.3zm144-42.3l0 84.7c10-11.3 16-26.1 16-42.3s-6-31.1-16-42.3zM448 304c0 44.7-26.2 83.2-64 101.2l0 42.8c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32l0-42.8c-37.8-18-64-56.5-64-101.2c0-61.9 50.1-112 112-112l32 0c61.9 0 112 50.1 112 112z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Associações</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9l0 28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5l0-24.6c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Universidades</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M448 32l-86.1 0-1 1-127 127 92.1 0 1-1L453.8 32.3c-1.9-.2-3.8-.3-5.8-.3zm64 128l0-64c0-15.1-5.3-29.1-14-40l-104 104L512 160zM294.1 32l-92.1 0-1 1L73.9 160l92.1 0 1-1 127-127zM64 32C28.7 32 0 60.7 0 96l0 64 6.1 0 1-1 127-127L64 32zM512 192L0 192 0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-224z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Produtoras</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
+              <path d="M208 80c0-26.5 21.5-48 48-48l64 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-8 0 0 40 152 0c30.9 0 56 25.1 56 56l0 32 8 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-64 0c-26.5 0-48-21.5-48-48l0-64c0-26.5 21.5-48 48-48l8 0 0-32c0-4.4-3.6-8-8-8l-152 0 0 40 8 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-64 0c-26.5 0-48-21.5-48-48l0-64c0-26.5 21.5-48 48-48l8 0 0-40-152 0c-4.4 0-8 3.6-8 8l0 32 8 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-64 0c-26.5 0-48-21.5-48-48l0-64c0-26.5 21.5-48 48-48l8 0 0-32c0-30.9 25.1-56 56-56l152 0 0-40-8 0c-26.5 0-48-21.5-48-48l0-64z"/>
+            </svg>
+          </div>
+          <h4 class="format-title">Entidades<br />setoriais</h4>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Banner Divisor -->
   <section class="divider-banner-section" style={`background-image: url(${optDividerBg.src});`}>
-  </section>
 
-  <!-- Versatilidade Section -->
-  <section class="versatilidade-section" style={`background-image: url(${optEquilibrioBg.src});`}>
-    <div class="versatilidade-container">
-      <div class="versatilidade-box">
-        <div class="versatilidade-header">
-          <h2 class="section-title">Versatilidade e experiência para</h2>
-          <h3 class="section-subtitle">qualquer formato de evento</h3>
-        </div>
-        <div class="formats-grid">
-          <div class="format-card">
-            <div class="format-icon">
-              <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                <path d="M128 480h256V80c0-26.5-21.5-48-48-48H176c-26.5 0-48 21.5-48 48v400zm64-384h128v32H192V96zm320 80v256c0 26.5-21.5 48-48 48h-48V128h48c26.5 0 48 21.5 48 48zM96 480H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48h48v352z"/>
-              </svg>
-            </div>
-            <h4 class="format-title">Confraternizações<br />empresariais</h4>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">
-              <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                <path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"/>
-              </svg>
-            </div>
-            <h4 class="format-title">Lançamentos<br />de produtos</h4>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">
-              <svg aria-hidden="true" width="40" height="40" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
-                <path d="M208 352c-2.39 0-4.78.35-7.06 1.09C187.98 357.3 174.35 360 160 360c-14.35 0-27.98-2.7-40.95-6.91-2.28-.74-4.66-1.09-7.05-1.09C49.94 352-.33 402.48 0 464.62.14 490.88 21.73 512 48 512h224c26.27 0 47.86-21.12 48-47.38.33-62.14-49.94-112.62-112-112.62zm-48-32c53.02 0 96-42.98 96-96s-42.98-96-96-96-96 42.98-96 96 42.98 96 96 96zM592 0H208c-26.47 0-48 22.25-48 49.59V96c23.42 0 45.1 6.78 64 17.8V64h352v288h-64v-64H384v64h-76.24c19.1 16.69 33.12 38.73 39.69 64H592c26.47 0 48-22.25 48-49.59V49.59C640 22.25 618.47 0 592 0z"/>
-              </svg>
-            </div>
-            <h4 class="format-title">Treinamentos<br />e workshops</h4>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">
-              <span class="format-icon-wrapper">
-                <svg aria-hidden="true" class="address-card-svg" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M528 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 400H48V80h480v352zM208 256c35.3 0 64-28.7 64-64s-28.7-64-64-64-64 28.7-64 64 28.7 64 64 64zm-89.6 128h179.2c12.4 0 22.4-8.6 22.4-19.2v-19.2c0-31.8-30.1-57.6-67.2-57.6-10.8 0-18.7 8-44.8 8-26.9 0-33.4-8-44.8-8-37.1 0-67.2 25.8-67.2 57.6v19.2c0 10.6 10 19.2 22.4 19.2zM360 320h112c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8H360c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8zm0-64h112c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8H360c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8zm0-64h112c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8H360c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8z"></path></svg>
-              </span>
-            </div>
-            <h4 class="format-title">Convenções<br />e congressos</h4>
-          </div>
-        </div>
-      </div>
-    </div>
   </section>
 
   <!-- Cenário Section -->
   <section class="cenario-section">
     <div class="cenario-container">
-      <h2 class="section-title dark-text">O cenário onde ideias</h2>
-      <h3 class="section-subtitle white-text">se tornam grandes eventos</h3>
+      <h2 class="section-title dark-text"> O mesmo espaço.</h2>
+      <h3 class="section-subtitle white-text">Diferentes possibilidades para grandes eventos</h3>
+      <p class="section-text dark-text">Veja como o Rio Alameda se adapta a diferentes formatos de montagem, preservando circulação, conforto e eficiência operacional.</p>
     </div>
   </section>
 
@@ -178,70 +302,70 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
   <section class="galeria-section">
     <div class="gallery-grid">
       <figure class="gallery-item">
-        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Espaço Corporativo na Zona Sul" href="#" class="gallery-link">
-          <Img src="espaco-para-evento-corporativo-na-zona-sul-do-rio-de-janeiro-3.png" alt="Espaço para evento corporativo na Zona Sul do Rio de Janeiro" width={800} height={533} />
-        </a>
-      </figure>
-      <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 1" href="#" class="gallery-link">
-          <Img src="galeria-1-scaled.jpeg" alt="Galeria 1" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos04_resultado.webp" alt="Galeria 1" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 2" href="#" class="gallery-link">
-          <Img src="galeria-2-scaled.jpeg" alt="Galeria 2" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos11_resultado.webp" alt="Galeria 2" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 3" href="#" class="gallery-link">
-          <Img src="galeria-3-scaled.jpeg" alt="Galeria 3" width={600} height={800} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos12_resultado.webp" alt="Galeria 3" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 4" href="#" class="gallery-link">
-          <Img src="galeria-4-scaled.jpeg" alt="Galeria 4" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos01_resultado.webp" alt="Galeria 4" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 5" href="#" class="gallery-link">
-          <Img src="galeria-1.png" alt="Galeria 5" width={800} height={800} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos02_resultado.webp" alt="Galeria 5" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 6" href="#" class="gallery-link">
-          <Img src="galeria-6-scaled.jpeg" alt="Galeria 6" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos03_resultado.webp" alt="Galeria 6" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 7" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos05_resultado.webp" alt="Galeria 7" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 8" href="#" class="gallery-link">
-          <Img src="galeria-8-scaled.jpeg" alt="Galeria 8" width={800} height={533} />
-        </a>
-      </figure>
-      <figure class="gallery-item">
-        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Gallery 3" href="#" class="gallery-link">
-          <Img src="gallery-3-scaled.webp" alt="Gallery 3" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos07_resultado.webp" alt="Galeria 8" width={400} height={267} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 9" href="#" class="gallery-link">
-          <Img src="galeria-9-scaled.jpeg" alt="Galeria 9" width={800} height={533} />
-        </a>
-      </figure>
-      <figure class="gallery-item">
-        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Gallery 1" href="#" class="gallery-link">
-          <Img src="gallery-1-scaled.webp" alt="Gallery 1" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos06_resultado.webp" alt="Galeria 9" width={800} height={533} />
         </a>
       </figure>
       <figure class="gallery-item">
         <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 10" href="#" class="gallery-link">
-          <Img src="galeria-10-scaled.jpeg" alt="Galeria 10" width={800} height={533} />
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos08_resultado.webp" alt="Galeria 10" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 11" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos10_resultado.webp" alt="Galeria 11" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Galeria 12" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/galeria-ev-corporativos09_resultado.webp" alt="Galeria 12" width={800} height={533} />
         </a>
       </figure>
     </div>
   </section>
 
   <!-- Contato Section -->
-  <section class="contato-section" id="contato" style={`background-image: url(${optContatoBg.src});`}>
+  <section class="contato-section" id="contato">
     <div class="contato-container">
       <div class="contato-info">
         <h2 class="section-title">Eleve seu próximo evento corporativo</h2>
@@ -264,22 +388,44 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
             { name: 'empresa',    type: 'text',     placeholder: 'Empresa',                    required: true },
             { name: 'tipo', type: 'select', placeholder: '', required: true, options: [
               { value: '', label: 'Tipo de evento', disabled: true, selected: true },
-              { value: 'Confraternização corporativa', label: 'Confraternização corporativa' },
-              { value: 'Corporativo', label: 'Corporativo' },
-              { value: 'Feiras e Exposições', label: 'Feiras e Exposições' },
-              { value: 'Masterclass e Palestras', label: 'Masterclass e Palestras' },
-              { value: 'Mentorias e Treinamentos', label: 'Mentorias e Treinamentos' },
-              { value: 'Offsite corporativo', label: 'Offsite corporativo' },
-              { value: 'Reuniões de Networking', label: 'Reuniões de Networking' },
-              { value: 'Workshops, Conferências e Seminários', label: 'Workshops, Conferências e Seminários' },
-              { value: 'Outros', label: 'Outros' }
+              { value: 'Feiras corporativas', label: 'Feiras corporativas' },
+              { value: 'Congressos', label: 'Congressos' },
+              { value: 'Convenções', label: 'Convenções' },
+              { value: 'Treinamentos empresariais', label: 'Treinamentos empresariais' },
+              { value: 'Lançamentos de produtos', label: 'Lançamentos de produtos' },
+              { value: 'Eventos institucionais', label: 'Eventos institucionais' },
+              { value: 'Colações de grau', label: 'Colações de grau' }
             ]},
             { name: 'data',       type: 'text',     placeholder: 'Data do Evento',             required: true, id: 'event-date' },
             { name: 'horario',    type: 'text',     placeholder: 'Horário (Início/Término)',    required: true },
-            { name: 'convidados', type: 'number',   placeholder: 'N° de Pessoas (convidados)', required: true },
+            { name: 'convidados', type: 'select',   placeholder: '', required: true, options: [
+              { value: '', label: 'N° de Pessoas (convidados)', disabled: true, selected: true },
+              { value: 'Menos de 100', label: 'Menos de 100' },
+              { value: '100-300', label: '100-300' },
+              { value: '300-500', label: '300-500' },
+              { value: '500-1000', label: '500-1000' },
+              { value: '1000+', label: '1000+' }
+            ]},
             { name: 'mensagem',   type: 'textarea', placeholder: 'Detalhes adicionais (opcional)', required: false },
           ]}
         />
+      </div>
+    </div>
+  </section>
+
+  <!-- Localização Section -->
+  <section class="localizacao-section">
+    <div class="localizacao-container">
+      <div class="section-title-wrapper">
+        <h2 class="section-title dark-text">Localização estratégica para</h2>
+        <h3 class="section-subtitle white-text">receber grandes p<span class="accent-dot">ú</span>blicos</h3>
+      </div>
+      <div class="localizacao-info">
+        <p class="section-text dark-text">Na Zona Sul do Rio de Janeiro, o Rio Alameda está próximo aos principais aeroportos, hotéis, estações de metrô e vias de acesso da cidade, facilitando a logística de convidados, fornecedores e equipes de produção.</p>
+        <p class="localizacao-endereco"><strong>Endereço:</strong> Dentro do Clube Casa de Espanha - R. Maria Eugênia, 300 - Humaitá, Rio de Janeiro - RJ, 22261-080</p>
+      </div>
+      <div class="localizacao-map-wrapper">
+        <StaticMap src={mapEmbedSrc} height={400} />
       </div>
     </div>
   </section>
@@ -347,10 +493,10 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
   async function initDatePicker() {
     const fields = document.querySelectorAll('input[name="data"]');
     if (fields.length === 0) return;
-
+    
     const loaded = await loadFlatpickr();
     if (!loaded) return;
-
+    
     const portugueseLocale = {
       weekdays: {
         shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
@@ -404,7 +550,7 @@ const optContatoBg = await getImage({ src: imgContatoBg, format: 'webp', quality
       if (index < 0) index = images.length - 1;
       if (index >= images.length) index = 0;
       currentIndex = index;
-
+      
       lightboxImg.src = images[currentIndex].url;
       if (lightboxCaption) {
         lightboxCaption.textContent = images[currentIndex].title;
