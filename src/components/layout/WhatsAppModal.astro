@@ -213,7 +213,7 @@ step1Fields.forEach(f => {
                 </svg>
                 Voltar
               </button>
-              <button type="submit" id="wa-submit-btn" class="wa-btn wa-btn-primary">
+              <button type="button" id="wa-submit-btn" class="wa-btn wa-btn-primary">
                 <span class="btn-text">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.464L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.789-4.382 9.792-9.791.001-2.621-1.013-5.086-2.856-6.93C16.368 2.05 13.91 1.037 11.29 1.037c-5.4.001-9.79 4.384-9.793 9.793-.001 1.514.469 2.989 1.359 4.265l-.993 3.624 3.704-.971zm10.73-6.52c-.296-.148-1.748-.862-2.019-.962-.27-.099-.467-.148-.663.149-.197.296-.764.962-.937 1.16-.172.197-.344.222-.64.074-.296-.148-1.25-.46-2.381-1.468-.881-.785-1.475-1.756-1.648-2.052-.172-.296-.018-.456.13-.603.133-.132.296-.346.444-.519.148-.173.197-.296.296-.494.099-.198.05-.37-.025-.519-.074-.148-.663-1.6-.908-2.192-.239-.575-.483-.497-.663-.506-.172-.008-.37-.01-.566-.01s-.514.074-.783.37c-.27.296-1.03 1.008-1.03 2.46s1.056 2.852 1.203 3.05c.148.197 2.078 3.173 5.032 4.45.703.303 1.25.485 1.678.621.706.224 1.348.193 1.857.117.567-.084 1.748-.713 1.995-1.4.246-.688.246-1.28.172-1.4-.074-.122-.271-.19-.567-.34z" />
@@ -250,14 +250,30 @@ step1Fields.forEach(f => {
     const nextBtn   = document.getElementById('wa-next-btn');
     const prevBtn   = document.getElementById('wa-prev-btn');
     const form      = document.getElementById('wa-multistep-form');
+    const submitBtn = document.getElementById('wa-submit-btn');
     const phoneInput = document.getElementById('wa-telefone');
     const dot1      = document.getElementById('wa-dot-1');
     const dot2      = document.getElementById('wa-dot-2');
 
     if (!floatBtn || !overlay || !form) return;
 
+    // ─── form_start: qualquer interação com o popup ou com o formulário ──
+    let waStarted = false;
+    const markWaStarted = () => {
+      if (waStarted) return;
+      waStarted = true;
+      if (window.dataLayer) {
+        window.dataLayer.push({ event: 'form_start', form_id: 'form_whatsapp', project: projectSlug });
+      }
+    };
+
+    (['focusin', 'click', 'input', 'change', 'keydown']).forEach((evt) => {
+      form.addEventListener(evt, markWaStarted);
+    });
+
     // ─── Abre/Fecha modal ────────────────────────────────────────────
     floatBtn.addEventListener('click', () => {
+      markWaStarted();
       overlay.classList.add('active');
       document.body.style.overflow = 'hidden';
     });
@@ -341,8 +357,11 @@ step1Fields.forEach(f => {
     prevBtn.addEventListener('click', () => goToStep(1));
 
     // ─── Envio: Webhook + WhatsApp redirect ──────────────────────────
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // Sem type="submit"/evento submit nativo: o GTM não tem o que interceptar
+    // via listener de capture de "Form Submission", evitando conversões falsas
+    // quando a validação abaixo bloqueia o envio.
+    const handleSubmit = async () => {
+      if (submitBtn.disabled) return;
       if (!validateStep(step2)) return;
 
       const phoneDigits = phoneInput.value.replace(/\D/g, '');
@@ -354,7 +373,6 @@ step1Fields.forEach(f => {
         return;
       }
 
-      const submitBtn  = document.getElementById('wa-submit-btn');
       const btnText    = submitBtn.querySelector('.btn-text');
       const btnLoading = submitBtn.querySelector('.btn-loading');
 
@@ -466,6 +484,16 @@ step1Fields.forEach(f => {
         btnLoading.style.display = 'none';
         window.open(waUrl, '_blank');
       }, 400);
+    };
+
+    submitBtn.addEventListener('click', handleSubmit);
+
+    form.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const target = e.target;
+      if (target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON') return;
+      e.preventDefault();
+      handleSubmit();
     });
   });
 </script>

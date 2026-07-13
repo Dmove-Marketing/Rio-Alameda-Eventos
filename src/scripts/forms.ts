@@ -35,15 +35,24 @@ export function initForms() {
       return;
     }
 
-    form.addEventListener('focusin', () => {
-      if (!started) {
-        started = true;
-        (window as any).dataLayer?.push({ event: 'form_start', form_id: formId, project });
-      }
+    const markStarted = () => {
+      if (started) return;
+      started = true;
+      (window as any).dataLayer?.push({ event: 'form_start', form_id: formId, project });
+    };
+
+    // Dispara em qualquer interação com o form, não só ao focar um campo
+    (['focusin', 'click', 'input', 'change', 'keydown'] as const).forEach((evt) => {
+      form.addEventListener(evt, markStarted);
     });
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit, [type="submit"], [type="button"].form-submit');
+
+    // Sem type="submit"/evento submit nativo: o GTM não tem o que interceptar
+    // via listener de capture de "Form Submission", evitando conversões falsas
+    // quando a validação abaixo bloqueia o envio.
+    const handleSubmit = async () => {
+      if (submitBtn?.disabled) return;
 
       const hp = form.querySelector<HTMLInputElement>('[name="website"]');
       if (hp && hp.value) return;
@@ -115,7 +124,6 @@ export function initForms() {
         return;
       }
 
-      const submitBtn  = form.querySelector<HTMLButtonElement>('.form-submit, [type="submit"]');
       const btnText    = submitBtn?.querySelector<HTMLElement>('.btn-text');
       const btnLoading = submitBtn?.querySelector<HTMLElement>('.btn-loading');
 
@@ -267,6 +275,16 @@ export function initForms() {
           }
         }
       }
+    };
+
+    submitBtn?.addEventListener('click', handleSubmit);
+
+    form.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON') return;
+      e.preventDefault();
+      handleSubmit();
     });
   });
 }
