@@ -73,9 +73,33 @@ async function captureScreenshot(url, outputPath, browser, viewport) {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
     await page.waitForTimeout(1200);
 
-    // Scroll completo para forçar lazy images
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    // Scroll completo para forçar lazy images (em steps, pra dar tempo do
+    // IntersectionObserver disparar e da imagem carregar antes do próximo salto)
+    await page.evaluate(async () => {
+      const step = Math.max(400, window.innerHeight);
+      for (let y = 0; y < document.body.scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 150));
+      }
+      window.scrollTo(0, document.body.scrollHeight);
+    });
     await page.waitForTimeout(600);
+
+    // Espera todas as <img> da página terminarem de carregar (lazy incluído),
+    // com timeout pra não travar caso alguma imagem realmente esteja quebrada
+    await page.evaluate(() => Promise.race([
+      Promise.all(
+        Array.from(document.images)
+          .filter((img) => !img.complete)
+          .map((img) => new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+          }))
+      ),
+      new Promise((resolve) => setTimeout(resolve, 8000)),
+    ])).catch(() => {});
+    await page.waitForTimeout(300);
+
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(400);
 
@@ -91,12 +115,23 @@ async function captureScreenshot(url, outputPath, browser, viewport) {
 
 // ─── Comparação ───────────────────────────────────────────────────────────────
 
-function compareImages(imgAPath, imgBPath, diffOutPath) {
-  const imgA = PNG.sync.read(fs.readFileSync(imgAPath));
-  const imgB = PNG.sync.read(fs.readFileSync(imgBPath));
+// pixelmatch exige buffers do mesmo tamanho; como os prints full-page costumam
+// ter alturas diferentes (conteúdo com densidades distintas), recorta ambos
+// para a altura comum a partir do topo antes de comparar.
+function cropToHeight(img, height) {
+  const cropped = new PNG({ width: img.width, height });
+  img.data.copy(cropped.data, 0, 0, img.width * height * 4);
+  return cropped;
+}
 
-  const width  = Math.min(imgA.width,  imgB.width);
-  const height = Math.min(imgA.height, imgB.height);
+function compareImages(imgAPath, imgBPath, diffOutPath) {
+  const imgARaw = PNG.sync.read(fs.readFileSync(imgAPath));
+  const imgBRaw = PNG.sync.read(fs.readFileSync(imgBPath));
+
+  const width  = Math.min(imgARaw.width,  imgBRaw.width);
+  const height = Math.min(imgARaw.height, imgBRaw.height);
+  const imgA   = cropToHeight(imgARaw, height);
+  const imgB   = cropToHeight(imgBRaw, height);
   const diff   = new PNG({ width, height });
 
   const mismatch = pixelmatch(imgA.data, imgB.data, diff.data, width, height, {

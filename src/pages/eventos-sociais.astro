@@ -1,0 +1,475 @@
+---
+// Gerado e refatorado para Dmove Clean-Room
+import Base from '../layouts/Base.astro';
+import config from '../../config.json';
+import Img from '../components/ui/Img.astro';
+import LeadForm from '../components/forms/LeadForm.astro';
+import StaticMap from '../components/ui/StaticMap.astro';
+import '../styles/eventos-sociais.css';
+import '@fontsource/bebas-neue';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/700.css';
+
+import { getImage } from 'astro:assets';
+import imgEquilibrioBg from '../assets/images/29988650_158-Convertido-scaled.webp';
+import imgEstruturaBg from '../assets/images/grain-8-scaled.jpg';
+import imgDividerBg from '../assets/images/WhatsApp-Image-2025-04-06-at-12.27.29-scaled.jpeg';
+import imgEquilibrioBox from '../assets/images/WhatsApp-Image-2025-01-14-at-11.28.09-scaled.jpeg';
+import fontBeyondInfinity from '../assets/fonts/Beyond-Infinity-Demo.woff';
+
+const optEquilibrioBg = await getImage({ src: imgEquilibrioBg, format: 'webp', quality: 80, width: 1200 });
+const optEquilibrioBox = await getImage({ src: imgEquilibrioBox, format: 'webp', quality: 80, width: 800 });
+const optEstruturaBg = await getImage({ src: imgEstruturaBg, format: 'webp', quality: 75, width: 1000 });
+const optDividerBg = await getImage({ src: imgDividerBg, format: 'webp', quality: 75, width: 1200 });
+
+const enderecoRioAlameda = 'Clube Casa de Espanha, R. Maria Eugênia, 300 - Humaitá, Rio de Janeiro - RJ, 22261-080';
+const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(enderecoRioAlameda)}&output=embed`;
+---
+
+<Base
+  title="Eventos Sociais - Rio Alameda Eventos"
+  description="O Rio Alameda é o espaço ideal para casamentos, aniversários, formaturas e eventos sociais na Zona Sul do Rio, com vista para o Cristo Redentor."
+  ogImage="https://eventos.rioalamedaeventos.com/wp-content/uploads/2025/09/imgi_108_588d00_1d39e94a04c542b7989dabc3392724b8mv2.jpg"
+  canonical="https://eventos.rioalamedaeventos.com/eventos-sociais/"
+  whatsAppStep1Fields={[
+    { name: 'data', type: 'text', placeholder: 'Data do evento', required: true },
+    { name: 'horario', type: 'text', placeholder: 'Horário do evento', required: true },
+    { name: 'convidados', type: 'text', placeholder: 'N° de Convidados', required: true },
+    { name: 'tipo', type: 'select', placeholder: '', required: true, options: [
+      { value: '', label: 'Tipo de evento' },
+      { value: 'Aniversário', label: 'Aniversário' },
+      { value: 'Aniversário debutante', label: 'Aniversário debutante' },
+      { value: 'Casamento', label: 'Casamento' },
+      { value: 'Mini wedding', label: 'Mini wedding' },
+      { value: 'Bodas', label: 'Bodas' },
+      { value: 'Formatura', label: 'Formatura' },
+      { value: 'Festa temática', label: 'Festa temática' },
+      { value: 'Confraternização social', label: 'Confraternização social' },
+      { value: 'Outros', label: 'Outros' }
+    ] }
+  ]}
+  whatsAppMessage="Olá, vamos conversar?\nEstamos ansiosos para saber mais sobre sua celebração! 🎉"
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin />
+    <link rel="preload" href={fontBeyondInfinity} as="font" type="font/woff" crossorigin />
+    <link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://use.typekit.net/koh5npl.css" /></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap" /></noscript>
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" /></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css" /></noscript>
+  </Fragment>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <Img src="WhatsApp-Image-2025-01-14-at-11.28.10-2048x1366.jpeg" alt="" width={2048} height={1366} priority class="hero-bg-img" />
+    <div class="hero-container">
+      <div class="logo-wrapper">
+        <Img src="rio-alameda-sem-fundo-branca-e1758045596842.png" alt="Rio Alameda Logo" width={130} height={94} class="logo-img" priority />
+      </div>
+      <div class="hero-content">
+        <h2 class="hero-title">Celebre grandes momentos <br/> com a vista mais</h2>
+        <h1 class="hero-accent">Inesquec<span class="accent-dot">í</span>vel do Rio</h1>
+        <p class="hero-description">Casamentos, aniversários, formaturas, festas temáticas e eventos sociais ganham uma nova dimensão no Rio Alameda, com estrutura completa e vista icônica para o Cristo Redentor.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#contato">Solicite um orçamento</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Autoridade Section -->
+  <section class="autoridade-section">
+    <div class="autoridade-container">
+      <span class="autoridade-item">825 m² Área livre</span>
+      <span class="autoridade-divider">|</span>
+      <span class="autoridade-item">Até 1.800 convidados</span>
+      <span class="autoridade-divider">|</span>
+      <span class="autoridade-item">Vista para o Cristo Redentor</span>
+      <span class="autoridade-divider">|</span>
+      <span class="autoridade-item">Zona Sul do Rio de Janeiro</span>
+    </div>
+  </section>
+
+  <!-- Equilíbrio Section -->
+  <section class="equilibrio-section" style={`background-image: url(${optEquilibrioBg.src});`}>
+    <div class="equilibrio-container">
+      <div class="equilibrio-box">
+        <div class="equilibrio-content">
+          <div class="section-title-wrapper">
+            <h2 class="section-title">Um refúgio urbano <br class="mobile-only">para sua</h2>
+            <h3 class="section-subtitle">comemora<span class="accent-dot">çã</span>o</h3>
+          </div>
+          <p class="section-text">Um refúgio urbano criado para celebrar em grande estilo.<br>
+No ponto mais estratégico da Zona Sul — perto de aeroportos, hotéis, metrô e acessos — o Rio Alameda oferece 1.000 m², pé-direito alto e uma vista icônica para o Cristo Redentor.<br>
+Aqui, você tem liberdade total para criar, personalizar e dar forma ao evento dos seus sonhos.</p>
+        </div>
+        <div class="equilibrio-image" style={`background-image: url(${optEquilibrioBox.src});`}></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Estrutura Section -->
+  <section class="estrutura-section" style={`background-image: url(${optEstruturaBg.src});`}>
+    <div class="estrutura-container">
+      <div class="estrutura-dark-box">
+        <div class="estrutura-header">
+          <h2 class="section-title">A estrutura ideal <br class="mobile-only">para sua</h2>
+          <h3 class="section-subtitle">celebra<span class="accent-dot">çã</span>o</h3>
+        </div>
+        <p class="section-text">Com 825 m² de área livre, acessibilidade, estacionamento, climatização e camarim, o Rio Alameda entrega conforto, beleza e eficiência para eventos sociais de todos os formatos.
+Um espaço versátil, elegante e pronto para receber celebrações que pedem impacto e fluidez.</p>
+        <div class="estrutura-formatos-grid">
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/banquete-rio-alameda_resultado.webp" alt="Banquete" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Banquete<br />até 700 convidados</h4>
+          </div>
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/coquetel-rio-alameda_resultado.webp" alt="Coquetel" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Coquetel<br />até 1000 pessoas</h4>
+          </div>
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/auditorio-rio-alameda_resultado.webp" alt="Plenária/Auditório" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Plenária/Auditório<br />até 1200 participantes</h4>
+          </div>
+          <div class="estrutura-formato-card">
+            <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/show-rio-alameda_resultado.webp" alt="Show/Festa" width={280} height={280} class="estrutura-formato-img" />
+            <h4 class="format-title">Show/Festa<br />até 1800 pessoas</h4>
+          </div>
+        </div>
+        <div class="estrutura-actions">
+          <a class="btn-primary" href="#contato">Solicite um orçamento</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Versatilidade Section -->
+  <section class="versatilidade-section">
+    <div class="versatilidade-container">
+      <div class="versatilidade-header">
+        <h2 class="section-title dark-text">Mais do que um espaço,</h2>
+        <h3 class="section-subtitle white-text">uma solu<span class="accent-dot">çã</span>o completa</h3>
+      </div>
+      <div class="formats-grid">
+        <div class="format-card">
+          <div class="format-icon">
+            <i class="las la-birthday-cake" aria-hidden="true"></i>
+          </div>
+          <h4 class="format-title">Aniversários</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"></path></svg>
+          </div>
+          <h4 class="format-title">Casamentos</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 448 416.22" xmlns="http://www.w3.org/2000/svg"><path d="M438.23,89.27L230.23,1.27c-3.98-1.69-8.48-1.69-12.47,0L9.77,89.27c-8.14,3.44-11.94,12.83-8.5,20.97,1.62,3.83,4.67,6.88,8.5,8.5l54.23,22.94v80.21c-.02,19.24,11.47,36.63,29.17,44.16l99.68,42.16c19.92,8.37,42.37,8.37,62.28,0l48.87-20.67v35.41c-24.99,8.84-38.09,36.26-29.25,61.25,8.84,24.99,36.26,38.09,61.25,29.25s38.09-36.26,29.25-61.25c-4.83-13.67-15.59-24.42-29.25-29.25v-48.94l18.83-7.96c17.7-7.53,29.19-24.92,29.17-44.16v-80.21l54.24-22.94c8.14-3.44,11.94-12.83,8.5-20.97-1.62-3.83-4.67-6.88-8.5-8.5h0ZM319.99,384c-8.84,0-16-7.16-16-16s7.16-16,16-16,16,7.16,16,16c0,8.83-7.17,15.99-16,16ZM242.67,278.73c-11.95,5-25.4,5-37.34,0l-99.59-42.12c-5.91-2.5-9.74-8.3-9.73-14.72v-66.64l121.78,51.48c3.97,1.69,8.46,1.69,12.44,0l73.78-31.19v77.26l-61.33,25.93ZM351.99,221.89c0,6.42-3.83,12.22-9.73,14.72l-6.27,2.65v-77.24l16-6.76v66.64ZM311.21,137.72l-80.06-40.03c-7.9-3.95-17.52-.75-21.47,7.16-3.95,7.9-.75,17.52,7.16,21.47l55.62,27.81-48.46,20.52C96.5,120.67,62.07,106.1,57.07,103.98L223.99,33.37l166.92,70.61c-46.57,19.71-4.58,1.94-79.71,33.73h0Z"></path></svg>
+          </div>
+          <h4 class="format-title">Formatura</h4>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">
+            <svg aria-hidden="true" width="40" height="40" viewBox="0 0 506.67 682.67" xmlns="http://www.w3.org/2000/svg"><path class="cls-1" d="M484.52,494c5.74-20.57,8.81-42.26,8.81-64.67,0-132.55-107.45-240-240-240S13.33,296.79,13.33,429.33s107.45,240,240,240c67.27,0,128.08-27.68,171.66-72.27"></path><path class="cls-1" d="M373.33,429.33c0-132.55-53.73-240-120-240s-120,107.45-120,240,53.73,240,120,240,120-107.45,120-240Z"></path><path class="cls-1" d="M306.92,189.33v-41.18c0-9.66-7.83-17.49-17.49-17.49h-72.21c-9.66,0-17.49,7.83-17.49,17.49v41.18h107.18Z"></path><path class="cls-1" d="M253.33,125.33V13.33"></path><path class="cls-1" d="M45.91,309.33h414.85"></path><path class="cls-1" d="M26.53,429.33h453.6"></path><path class="cls-1" d="M48.48,549.33h352.8"></path><path class="cls-1" d="M253.33,202.53v453.6"></path></svg>
+          </div>
+          <h4 class="format-title">Festas<br />Temáticas</h4>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Banner Divisor -->
+  <section class="divider-banner-section" style={`background-image: url(${optDividerBg.src});`}>
+  </section>
+
+  <!-- Cenário Section -->
+  <section class="cenario-section">
+    <div class="cenario-container">
+      <h2 class="section-title dark-text">Onde suas comemorações</h2>
+      <h3 class="section-subtitle white-text">ganham destaque</h3>
+      <p class="section-text dark-text">Cada detalhe do Rio Alameda foi pensado para valorizar sua celebração — do primeiro brinde à última dança.</p>
+    </div>
+  </section>
+
+  <!-- Galeria Section -->
+  <section class="galeria-section">
+    <div class="gallery-grid">
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Salão decorado" href="#" class="gallery-link">
+          <Img src="WhatsApp-Image-2025-01-14-at-11.28.10-1536x1024.jpeg" alt="Salão decorado para celebração" width={1536} height={1024} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Festa colorida" href="#" class="gallery-link">
+          <Img src="WhatsApp-Image-2025-01-14-at-11.28.09-1536x2048.jpeg" alt="Festa colorida no Rio Alameda" width={1536} height={2048} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Banquete" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/banquete-rio-alameda_resultado.webp" alt="Montagem de banquete" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Coquetel" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/coquetel-rio-alameda_resultado.webp" alt="Montagem de coquetel" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Plenária/Auditório" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/auditorio-rio-alameda_resultado.webp" alt="Montagem de plenária" width={800} height={533} />
+        </a>
+      </figure>
+      <figure class="gallery-item">
+        <a data-lightbox-open="yes" data-lightbox-slideshow="gallery" data-lightbox-title="Show/Festa" href="#" class="gallery-link">
+          <Img src="https://media.dmove.com.br/clients/rioalamedaeventos/photos/show-rio-alameda_resultado.webp" alt="Montagem de show" width={800} height={533} />
+        </a>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Contato Section -->
+  <section class="contato-section" id="contato">
+    <div class="contato-container">
+      <div class="contato-info">
+        <h2 class="section-title">O próximo grande <br class="mobile-only">momento da sua vida</h2>
+        <h3 class="section-subtitle">merece esse cen<span class="accent-dot">á</span>rio</h3>
+        <hr class="divider" />
+        <p class="section-text">Preencha seus dados e receba um orçamento personalizado para seu evento.</p>
+      </div>
+      <div class="contato-form-wrapper">
+        <LeadForm
+          formId="lead-form"
+          project={config.project_slug}
+          submitUrl={config.forms['lead-form'].webhooks[0]}
+          redirectUrl={config.forms['lead-form'].redirect_on_success}
+          submitText="ENVIAR SOLICITAÇÃO"
+          honeypot
+          fields={[
+            { name: 'nome',       type: 'text',     placeholder: 'Nome completo',              required: true },
+            { name: 'telefone',   type: 'text',     placeholder: 'WhatsApp',                   required: true },
+            { name: 'email',      type: 'email',    placeholder: 'E-mail',                     required: true },
+            { name: 'tipo', type: 'select', placeholder: '', required: true, options: [
+              { value: '', label: 'Tipo de evento', disabled: true, selected: true },
+              { value: 'Aniversário', label: 'Aniversário' },
+              { value: 'Aniversário debutante', label: 'Aniversário debutante' },
+              { value: 'Casamento', label: 'Casamento' },
+              { value: 'Mini wedding', label: 'Mini wedding' },
+              { value: 'Bodas', label: 'Bodas' },
+              { value: 'Formatura', label: 'Formatura' },
+              { value: 'Festa temática', label: 'Festa temática' },
+              { value: 'Confraternização social', label: 'Confraternização social' },
+              { value: 'Outros', label: 'Outros' }
+            ]},
+            { name: 'convidados', type: 'text',     placeholder: 'N° de Convidados',           required: true },
+            { name: 'data',       type: 'text',     placeholder: 'Data do Evento',             required: true },
+            { name: 'horario',    type: 'text',     placeholder: 'Horário (Início/Término)',    required: true },
+            { name: 'mensagem',   type: 'textarea', placeholder: 'Detalhes adicionais (opcional)', required: false },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Localização Section -->
+  <section class="localizacao-section">
+    <div class="localizacao-container">
+      <div class="section-title-wrapper">
+        <h2 class="section-title dark-text">Localização estratégica para</h2>
+        <h3 class="section-subtitle white-text">grandes celebra<span class="accent-dot">çõ</span>es</h3>
+      </div>
+      <div class="localizacao-info">
+        <p class="section-text dark-text">Na Zona Sul do Rio de Janeiro, o Rio Alameda está próximo aos principais aeroportos, hotéis, estações de metrô e vias de acesso da cidade, facilitando a logística de convidados, fornecedores e prestadores de serviço.</p>
+      </div>
+      <div class="localizacao-map-wrapper">
+        <StaticMap src={mapEmbedSrc} height={400} />
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="footer-section">
+    <div class="footer-container">
+      <div class="footer-copyright">
+        <p>Copyright © 2026 Rio Alameda Eventos - Todos os direitos reservados</p>
+      </div>
+      <div class="footer-logo">
+        <Img src="rio-alameda-sem-fundo-branca-e1758045596842.png" alt="Rio Alameda Logo" width={120} height={87} />
+      </div>
+      <div class="footer-credits">
+        <span>Desenvolvido por:</span>
+        <a href="https://dmove.com.br/?utm_source=lp&utm_medium=rio+alameda&utm_campaign=eventos+sociais" target="_blank" rel="noopener">
+          <Img src="logo-dmove.png" alt="Dmove Logo" width={80} height={18} />
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div id="custom-lightbox" class="custom-lightbox" aria-hidden="true" role="dialog">
+    <button class="lightbox-close" aria-label="Fechar">&times;</button>
+    <button class="lightbox-prev" aria-label="Anterior">&#10094;</button>
+    <button class="lightbox-next" aria-label="Próximo">&#10095;</button>
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="" />
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+</Base>
+
+<script>
+  // Carrega assets do flatpickr de forma dinâmica e assíncrona
+  async function loadFlatpickr(): Promise<boolean> {
+    if ((window as any).flatpickr) return true;
+
+    try {
+      if (!document.querySelector('link[href*="flatpickr"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+        document.head.appendChild(link);
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js';
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Falha ao carregar flatpickr'));
+        document.head.appendChild(script);
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  // Inicialização do Datepicker flatpickr
+  async function initDatePicker() {
+    const fields = document.querySelectorAll('input[name="data"]');
+    if (fields.length === 0) return;
+
+    const loaded = await loadFlatpickr();
+    if (!loaded) return;
+
+    const portugueseLocale = {
+      weekdays: {
+        shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+        longhand: ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"]
+      },
+      months: {
+        shorthand: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        longhand: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+      },
+      firstDayOfWeek: 1,
+      rangeSeparator: " até ",
+      ordinal: () => "º"
+    };
+
+    fields.forEach((field) => {
+      if ((field as any)._flatpickr) return;
+      if ((window as any).flatpickr) {
+        (window as any).flatpickr(field, {
+          disableMobile: true,
+          dateFormat: "d/m/Y",
+          locale: portugueseLocale
+        });
+      }
+    });
+  }
+
+  // Inicialização do Lightbox customizado
+  function initLightbox() {
+    const links = document.querySelectorAll<HTMLAnchorElement>('a[data-lightbox-open="yes"]');
+    const lightbox = document.getElementById('custom-lightbox');
+    if (links.length === 0 || !lightbox) return;
+
+    const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
+
+    if (!lightboxImg || !lightboxCaption || !closeBtn || !prevBtn || !nextBtn) return;
+
+    let currentIndex = 0;
+    const images = Array.from(links).map((link) => {
+      const img = link.querySelector('img');
+      return {
+        url: img ? img.src : link.href,
+        title: link.getAttribute('data-lightbox-title') || img?.alt || ''
+      };
+    });
+
+    function showImage(index: number) {
+      if (index < 0) index = images.length - 1;
+      if (index >= images.length) index = 0;
+      currentIndex = index;
+
+      lightboxImg.src = images[currentIndex].url;
+      if (lightboxCaption) {
+        lightboxCaption.textContent = images[currentIndex].title;
+      }
+    }
+
+    links.forEach((link, idx) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showImage(idx);
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      lightboxImg.src = '';
+    });
+
+    prevBtn.addEventListener('click', () => showImage(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showImage(currentIndex + 1));
+
+    // Fechar ao clicar fora da imagem
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox-content')) {
+        closeBtn.dispatchEvent(new Event('click'));
+      }
+    });
+
+    // Navegação via teclado
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.getAttribute('aria-hidden') === 'false') {
+        if (e.key === 'Escape') closeBtn.dispatchEvent(new Event('click'));
+        if (e.key === 'ArrowLeft') prevBtn.dispatchEvent(new Event('click'));
+        if (e.key === 'ArrowRight') nextBtn.dispatchEvent(new Event('click'));
+      }
+    });
+  }
+
+  // Inicializar tudo ao carregar
+  function initAll() {
+    initDatePicker();
+    initLightbox();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+
+  // Vigia mutações para popups dinâmicos
+  const obs = new MutationObserver(() => {
+    initDatePicker();
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+</script>
