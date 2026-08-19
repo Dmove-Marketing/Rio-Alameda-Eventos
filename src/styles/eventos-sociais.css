@@ -206,7 +206,7 @@
   position: relative;
   padding: 80px 10%;
   background-color: var(--color-dark);
-  background-image: url('../assets/images/29988650_158-Convertido-scaled.webp');
+  /* background-image definido inline no .astro via getImage() */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -296,7 +296,7 @@
   flex: 0.8;
   min-height: 350px;
   border-radius: 60px 0 60px 0;
-  background-image: url('../assets/images/WhatsApp-Image-2025-01-14-at-11.28.10-scaled.jpeg');
+  /* background-image definido inline no .astro via getImage() */
   background-position: center right;
   background-size: cover;
   background-repeat: no-repeat;
@@ -308,7 +308,7 @@
   position: relative;
   padding: 80px 10%;
   background-color: var(--color-dark);
-  background-image: url('../assets/images/29988650_158-Convertido-scaled.webp');
+  /* background-image definido inline no .astro via getImage() */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -405,7 +405,7 @@
 /* Divider Banner Section */
 .divider-banner-section {
   min-height: 440px;
-  background-image: url('../assets/images/WhatsApp-Image-2025-04-06-at-12.27.29-scaled.jpeg');
+  /* background-image definido inline no .astro via getImage() */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -422,7 +422,7 @@
   position: relative;
   padding: 80px 10%;
   background-color: var(--color-yellow);
-  background-image: url('../assets/images/grain-8-scaled.jpg');
+  /* background-image definido inline no .astro via getImage() */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
