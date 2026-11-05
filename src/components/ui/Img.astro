@@ -11,19 +11,23 @@ interface Props {
   quality?: number;
   class?: string;
   style?: string;
+  id?: string;
 }
 
 const {
   src,
   alt,
-  width = 1200,
+  width,
   height,
   priority = false,
   quality = 80,
   class: className,
   style,
+  id,
 } = Astro.props;
 
+// Imagem remota (CDN) vira <img> direto, sem ser baixada no build:
+// assim o build não quebra se algum arquivo estiver faltando no storage.
 const isRemote = /^https?:\/\//.test(src);
 
 const images = import.meta.glob<{ default: ImageMetadata }>(
@@ -40,37 +44,40 @@ if (!isRemote && !mod) {
 ---
 
 {isRemote ? (
-  <Image
+  <img
     src={src}
     alt={alt}
     width={width}
-    height={height ?? width}
+    height={height}
     loading={priority ? 'eager' : 'lazy'}
+    decoding="async"
     fetchpriority={priority ? 'high' : undefined}
-    quality={quality}
     class={className}
     style={style}
+    id={id}
   />
 ) : mod ? (
   <Image
     src={mod.default}
     alt={alt}
-    width={width}
+    width={width ?? 1200}
     height={height}
     loading={priority ? 'eager' : 'lazy'}
     fetchpriority={priority ? 'high' : undefined}
     quality={quality}
     class={className}
     style={style}
+    id={id}
   />
 ) : (
   <img
     src=""
     alt={alt}
-    width={width}
+    width={width ?? 1200}
     height={height ?? undefined}
     class={className}
     style={style}
+    id={id}
     data-placeholder={key}
     aria-hidden="true"
   />
